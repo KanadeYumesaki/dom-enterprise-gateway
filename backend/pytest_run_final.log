@@ -1,0 +1,44 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /home/masahiro/work/dom-enterprise-gateway/backend
+configfile: pyproject.toml
+plugins: langsmith-0.4.55, anyio-4.12.0, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collected 54 items
+
+app/tests/test_auth_service.py ......                                    [ 11%]
+app/tests/test_chat_service.py ...                                       [ 16%]
+app/tests/test_dom_orchestrator_service.py ...                           [ 22%]
+app/tests/test_endpoints_admin.py ...                                    [ 27%]
+app/tests/test_endpoints_auth.py .....                                   [ 37%]
+app/tests/test_endpoints_chat.py .......                                 [ 50%]
+app/tests/test_endpoints_feedback.py .....                               [ 59%]
+app/tests/test_endpoints_files.py ....                                   [ 66%]
+app/tests/test_main.py .                                                 [ 68%]
+app/tests/test_memory_service.py .......                                 [ 81%]
+app/tests/test_rag_service.py ...s                                       [ 88%]
+app/tests/test_repositories.py ......                                    [100%]
+
+=============================== warnings summary ===============================
+app/schemas/auth.py:4
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/auth.py:4: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AuthenticatedUser(BaseModel):
+
+app/schemas/chat.py:15
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatMessageResponse(BaseModel):
+
+app/schemas/chat.py:36
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:36: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatSessionResponse(BaseModel):
+
+app/schemas/file.py:5
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/file.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FileUploadResponse(BaseModel):
+
+app/schemas/feedback.py:16
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/feedback.py:16: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FeedbackResponse(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================== 53 passed, 1 skipped, 5 warnings in 1.44s ===================

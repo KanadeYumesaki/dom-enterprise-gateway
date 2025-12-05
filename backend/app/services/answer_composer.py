@@ -5,7 +5,7 @@ class AnswerComposerService:
     """
     LLMの最終出力を「Decision」「Why」「Next 3 Actions」のMarkdownセクションに整形するサービス。
     """
-    def __init__():
+    def __init__(self):
         pass
 
     async def compose_ic5_light_response(self, raw_llm_output: str) -> Dict[str, str]:

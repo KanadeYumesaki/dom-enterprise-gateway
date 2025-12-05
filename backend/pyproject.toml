@@ -21,7 +21,8 @@ asyncpg = ">=0.30.0,<1.0.0"
 langchain-google-genai = ">=3.2.0,<4.0.0"
 email-validator = "^2.2.0" 
 aiosqlite = "^0.20.0"
-pydantic-settings = "^2.6.0"   # ★ この行を追加
+pydantic-settings = "^2.6.0"
+python-multipart = "^0.0.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
