@@ -1,4 +1,5 @@
 from typing import AsyncGenerator, List
+from uuid import UUID
 from app.llm.mock_llm import MockLLMClient
 from app.services.answer_composer import AnswerComposerService
 from app.services.rag_service import RagService
@@ -40,7 +41,7 @@ class DomOrchestratorService:
             full_llm_output += token
         
         # LLMの生出力をIC-5ライト形式に整形
-        composed_response = await self.answer_composer.compose_ic5_light_response(full_llm_output)
+        composed_response = await self.answer_composer.compose_ic5_light_response(full_llm_output.strip())
 
         # 整形された応答をMarkdown形式でストリーム
         if composed_response["Decision"]:

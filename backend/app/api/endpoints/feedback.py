@@ -10,7 +10,7 @@ from app.dependencies import get_feedback_service
 
 router = APIRouter()
 
-@router.post("/feedback", response_model=FeedbackResponse, status_code=status.HTTP_201_CREATED, summary="ユーザーフィードバックを送信")
+@router.post("/", response_model=FeedbackResponse, status_code=status.HTTP_201_CREATED, summary="ユーザーフィードバックを送信")
 async def submit_feedback(
     feedback_in: FeedbackCreate,
     current_user: Annotated[AuthenticatedUser, Depends(get_current_user)],
@@ -26,7 +26,7 @@ async def submit_feedback(
     )
     return new_feedback
 
-@router.get("/feedback/{session_id}", response_model=List[FeedbackResponse], summary="セッションIDでフィードバックを取得")
+@router.get("/{session_id}", response_model=List[FeedbackResponse], summary="セッションIDでフィードバックを取得")
 async def get_feedback_for_session(
     session_id: UUID,
     current_user: Annotated[AuthenticatedUser, Depends(get_current_user)],
@@ -42,7 +42,7 @@ async def get_feedback_for_session(
     ]
     return [FeedbackResponse.model_validate(f) for f in filtered_feedback]
 
-@router.get("/feedback/message/{message_id}", response_model=Optional[FeedbackResponse], summary="メッセージIDでフィードバックを取得")
+@router.get("/message/{message_id}", response_model=Optional[FeedbackResponse], summary="メッセージIDでフィードバックを取得")
 async def get_feedback_for_message(
     message_id: UUID,
     current_user: Annotated[AuthenticatedUser, Depends(get_current_user)],

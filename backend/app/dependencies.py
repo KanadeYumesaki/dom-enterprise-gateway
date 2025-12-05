@@ -59,6 +59,8 @@ async def get_current_user(
         if not user.is_active:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
         return user
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -178,6 +180,16 @@ def get_file_service() -> FileService:
     """
     return FileService()
 
+def get_dom_orchestrator_service(
+    llm_client: Annotated[MockLLMClient, Depends(get_mock_llm_client)],
+    answer_composer: Annotated[AnswerComposerService, Depends(get_answer_composer_service)],
+    rag_service: Annotated[RagService, Depends(get_rag_service)] # Add RagService
+) -> DomOrchestratorService:
+    """
+    DomOrchestratorServiceの依存性注入を提供します。
+    """
+    return DomOrchestratorService(llm_client, answer_composer, rag_service)
+
 def get_memory_service(
     structured_memory_repo: Annotated[StructuredMemoryRepository, Depends(get_structured_memory_repository)],
     episodic_memory_repo: Annotated[EpisodicMemoryRepository, Depends(get_episodic_memory_repository)]
@@ -214,12 +226,4 @@ def get_feedback_service(
 
 
 
-def get_dom_orchestrator_service(
-    llm_client: Annotated[MockLLMClient, Depends(get_mock_llm_client)],
-    answer_composer: Annotated[AnswerComposerService, Depends(get_answer_composer_service)],
-    rag_service: Annotated[RagService, Depends(get_rag_service)] # Add RagService
-) -> DomOrchestratorService:
-    """
-    DomOrchestratorServiceの依存性注入を提供します。
-    """
-    return DomOrchestratorService(llm_client, answer_composer, rag_service)
+

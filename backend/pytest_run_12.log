@@ -1,0 +1,85 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /home/masahiro/work/dom-enterprise-gateway/backend
+configfile: pyproject.toml
+plugins: langsmith-0.4.55, anyio-4.12.0, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collected 54 items
+
+app/tests/test_auth_service.py ......                                    [ 11%]
+app/tests/test_chat_service.py ...                                       [ 16%]
+app/tests/test_dom_orchestrator_service.py ...                           [ 22%]
+app/tests/test_endpoints_admin.py ...                                    [ 27%]
+app/tests/test_endpoints_auth.py .....                                   [ 37%]
+app/tests/test_endpoints_chat.py .......                                 [ 50%]
+app/tests/test_endpoints_feedback.py .....                               [ 59%]
+app/tests/test_endpoints_files.py ....                                   [ 66%]
+app/tests/test_main.py .                                                 [ 68%]
+app/tests/test_memory_service.py .......                                 [ 81%]
+app/tests/test_rag_service.py ...F                                       [ 88%]
+app/tests/test_repositories.py ......                                    [100%]
+
+=================================== FAILURES ===================================
+___________________________ test_stream_rag_response ___________________________
+
+rag_service = <app.services.rag_service.RagService object at 0x7f3aa6945970>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='139889879570608'>
+
+    @pytest.mark.asyncio
+    async def test_stream_rag_response(rag_service, mock_chat_google_generative_ai):
+        """stream_rag_responseメソッドのテスト"""
+        test_question = "Stream this."
+        stream_chunks = ["First", "Second", "Third"]
+    
+        # LCELチェーン内のLLMのastreamをモック
+        async def mock_llm_stream(*args, **kwargs):
+            for chunk in stream_chunks:
+                yield chunk
+    
+        # mock_chat_google_generative_ai.return_value.astream is an AsyncMock
+        # We need to set its side_effect to the generator function if it's called, OR it returns an async iterator
+        # But astream is an async method that returns an async iterator.
+        # The simplest way is to overwrite astream with the async generator function (if it's not a mock object method but just a callable)
+        # But since it's a MagicMock, we should set side_effect.
+        mock_chat_google_generative_ai.return_value.astream.side_effect = mock_llm_stream
+    
+        mock_chat_google_generative_ai.return_value.astream.return_value = mock_llm_stream()
+    
+        rag_service.global_retriever.aget_relevant_documents.return_value = [] # ダミー
+    
+        received_chunks = []
+        async for chunk in rag_service.stream_rag_response(test_question):
+            received_chunks.append(chunk)
+    
+>       assert received_chunks == stream_chunks
+E       AssertionError: assert [] == ['First', 'Second', 'Third']
+E         
+E         Right contains 3 more items, first extra item: 'First'
+E         Use -v to get more diff
+
+app/tests/test_rag_service.py:137: AssertionError
+=============================== warnings summary ===============================
+app/schemas/auth.py:4
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/auth.py:4: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AuthenticatedUser(BaseModel):
+
+app/schemas/chat.py:15
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatMessageResponse(BaseModel):
+
+app/schemas/chat.py:36
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:36: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatSessionResponse(BaseModel):
+
+app/schemas/file.py:5
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/file.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FileUploadResponse(BaseModel):
+
+app/schemas/feedback.py:16
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/feedback.py:16: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FeedbackResponse(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED app/tests/test_rag_service.py::test_stream_rag_response - AssertionErr...
+=================== 1 failed, 53 passed, 5 warnings in 1.91s ===================

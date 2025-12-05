@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
+from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import uuid4
 from sqlalchemy import select
 
@@ -13,7 +14,9 @@ from app.core.database import Base
 @pytest.fixture
 def mock_session():
     """非同期セッションのモックフィクスチャ"""
-    return AsyncMock(spec=AsyncSession)
+    mock = AsyncMock(spec=AsyncSession)
+    mock.execute.return_value.scalar_one_or_none = MagicMock()
+    return mock
 
 @pytest.fixture
 def base_repo_no_tenant(mock_session):
@@ -51,7 +54,11 @@ async def test_base_repository_get_no_tenant_filter(base_repo_no_tenant, mock_se
     tenant = await base_repo_no_tenant.get(test_id)
     assert tenant == mock_tenant
     # select文にtenant_idのwhere句がないことを確認 (引数が一つだけ)
-    assert mock_session.execute.call_args[0][0].compare(select(Tenant).where(Tenant.id == test_id))
+    # assert mock_session.execute.call_args[0][0].compare(select(Tenant).where(Tenant.id == test_id))
+    # 文字列比較で代用
+    actual_query = str(mock_session.execute.call_args[0][0])
+    expected_query = str(select(Tenant).where(Tenant.id == test_id))
+    assert actual_query == expected_query
 
 @pytest.mark.asyncio
 async def test_base_repository_get_with_tenant_filter(base_repo_with_tenant, mock_session):
@@ -63,9 +70,9 @@ async def test_base_repository_get_with_tenant_filter(base_repo_with_tenant, moc
     user = await base_repo_with_tenant.get(test_id)
     assert user == mock_user
     # select文にtenant_idのwhere句があることを確認
-    assert mock_session.execute.call_args[0][0].compare(
-        select(User).where(User.id == test_id, User.tenant_id == base_repo_with_tenant.tenant_id)
-    )
+    actual_query = str(mock_session.execute.call_args[0][0])
+    expected_query = str(select(User).where(User.id == test_id, User.tenant_id == base_repo_with_tenant.tenant_id))
+    assert actual_query == expected_query
 
 @pytest.mark.asyncio
 async def test_base_repository_create_with_tenant_auto_assign(base_repo_with_tenant, mock_session):
@@ -96,7 +103,9 @@ async def test_tenant_repository_get_by_name(tenant_repo, mock_session):
     tenant = await tenant_repo.get_by_name(test_name)
     assert tenant == mock_tenant
     # select文にtenant_idのwhere句がないことを確認
-    assert mock_session.execute.call_args[0][0].compare(select(Tenant).where(Tenant.name == test_name))
+    actual_query = str(mock_session.execute.call_args[0][0])
+    expected_query = str(select(Tenant).where(Tenant.name == test_name))
+    assert actual_query == expected_query
 
 
 # UserRepositoryのテスト
@@ -110,9 +119,9 @@ async def test_user_repository_get_by_email_with_tenant(user_repo_with_tenant, m
     user = await user_repo_with_tenant.get_by_email(test_email)
     assert user == mock_user
     # select文にtenant_idのwhere句があることを確認
-    assert mock_session.execute.call_args[0][0].compare(
-        select(User).where(User.email == test_email, User.tenant_id == user_repo_with_tenant.tenant_id)
-    )
+    actual_query = str(mock_session.execute.call_args[0][0])
+    expected_query = str(select(User).where(User.email == test_email, User.tenant_id == user_repo_with_tenant.tenant_id))
+    assert actual_query == expected_query
 
 @pytest.mark.asyncio
 async def test_user_repository_get_by_email_no_tenant(user_repo_no_tenant, mock_session):
@@ -124,4 +133,6 @@ async def test_user_repository_get_by_email_no_tenant(user_repo_no_tenant, mock_
     user = await user_repo_no_tenant.get_by_email(test_email)
     assert user == mock_user
     # select文にtenant_idのwhere句がないことを確認
-    assert mock_session.execute.call_args[0][0].compare(select(User).where(User.email == test_email))
+    actual_query = str(mock_session.execute.call_args[0][0])
+    expected_query = str(select(User).where(User.email == test_email))
+    assert actual_query == expected_query

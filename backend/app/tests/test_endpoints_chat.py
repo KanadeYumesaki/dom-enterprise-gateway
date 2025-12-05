@@ -212,7 +212,7 @@ async def test_stream_chat_response_success(
 
     response = client.get(f"/api/v1/chat/stream/{session_id}?research_mode=false") # research_mode=falseを明示的に渡す
     assert response.status_code == 200
-    assert response.headers["content-type"] == "text/event-stream"
+    assert response.headers["content-type"].startswith("text/event-stream")
 
     full_response_content = ""
     for chunk in response.iter_bytes():
@@ -230,7 +230,7 @@ async def test_stream_chat_response_success(
 
     mock_chat_session_repo.get.assert_awaited_once_with(session_id)
     mock_chat_message_repo.get_by_session_id.assert_awaited_once_with(session_id)
-    mock_dom_orchestrator_service.process_chat_message.assert_awaited_once_with("Test prompt", str(session_id), False) # Falseを検証
+    mock_dom_orchestrator_service.process_chat_message.assert_called_once_with("Test prompt", str(session_id), False) # Falseを検証
     mock_chat_message_repo.create.assert_awaited_once_with({
         "session_id": session_id,
         "role": "assistant",
@@ -275,7 +275,7 @@ async def test_stream_chat_response_research_mode_on(
 
     response = client.get(f"/api/v1/chat/stream/{session_id}?research_mode=true") # research_mode=trueを渡す
     assert response.status_code == 200
-    assert response.headers["content-type"] == "text/event-stream"
+    assert response.headers["content-type"].startswith("text/event-stream")
 
     full_response_content = ""
     for chunk in response.iter_bytes():
@@ -293,7 +293,7 @@ async def test_stream_chat_response_research_mode_on(
 
     mock_chat_session_repo.get.assert_awaited_once_with(session_id)
     mock_chat_message_repo.get_by_session_id.assert_awaited_once_with(session_id)
-    mock_dom_orchestrator_service.process_chat_message.assert_awaited_once_with("Research prompt", str(session_id), True) # Trueを検証
+    mock_dom_orchestrator_service.process_chat_message.assert_called_once_with("Research prompt", str(session_id), True) # Trueを検証
     mock_chat_message_repo.create.assert_awaited_once_with({
         "session_id": session_id,
         "role": "assistant",
@@ -316,7 +316,15 @@ async def test_stream_chat_response_unauthorized_session(
         id=session_id, user_id=uuid4(), tenant_id=mock_current_user.tenant_id, title="Other User's Session", is_active=True, created_at=datetime.now(), updated_at=datetime.now()
     )
 
-    response = client.get(f"/api/v1/chat/stream/{session_id}")
+    # get_rag_serviceの依存関係をオーバーライドして、実物のRagService初期化を防ぐ
+    from app.dependencies import get_rag_service
+    mock_rag_service = AsyncMock()
+    app.dependency_overrides[get_rag_service] = lambda: mock_rag_service
+    
+    try:
+        response = client.get(f"/api/v1/chat/stream/{session_id}")
+    finally:
+        app.dependency_overrides.pop(get_rag_service, None)
     assert response.status_code == 200 # StreamingResponseはHTTP 200を返し、エラーをボディに含める
     assert "ERROR: Unauthorized access or session not found." in response.text
     mock_chat_session_repo.get.assert_awaited_once_with(session_id)

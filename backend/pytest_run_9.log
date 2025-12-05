@@ -1,0 +1,792 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /home/masahiro/work/dom-enterprise-gateway/backend
+configfile: pyproject.toml
+plugins: langsmith-0.4.55, anyio-4.12.0, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collected 54 items
+
+app/tests/test_auth_service.py ......                                    [ 11%]
+app/tests/test_chat_service.py ...                                       [ 16%]
+app/tests/test_dom_orchestrator_service.py ...                           [ 22%]
+app/tests/test_endpoints_admin.py ...                                    [ 27%]
+app/tests/test_endpoints_auth.py .....                                   [ 37%]
+app/tests/test_endpoints_chat.py .......                                 [ 50%]
+app/tests/test_endpoints_feedback.py .....                               [ 59%]
+app/tests/test_endpoints_files.py .FFF                                   [ 66%]
+app/tests/test_main.py .                                                 [ 68%]
+app/tests/test_memory_service.py .......                                 [ 81%]
+app/tests/test_rag_service.py FEEE                                       [ 88%]
+app/tests/test_repositories.py ......                                    [100%]
+
+==================================== ERRORS ====================================
+_______________________ ERROR at setup of test_query_rag _______________________
+
+mock_tenant_id = UUID('47cea86a-cba0-46ff-ad70-ffb48257979a')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140158202736720'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140158202740512'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140158196060176'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140158191563792'>
+
+    @pytest.fixture
+    def rag_service(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceのフィクスチャ"""
+        service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+        # 依存するオブジェクトがモックであることを確認
+        # assert isinstance(service.global_vectorstore, (MagicMock, Mock)) # Flaky check
+        # assert isinstance(service.embeddings, MagicMock) # Flaky check with NonCallableMagicMock
+>       assert isinstance(service.llm, MagicMock)
+E       AssertionError: assert False
+E        +  where False = isinstance(<NonCallableMagicMock name='ChatGoogleGenerativeAI()' spec='ChatGoogleGenerativeAI' id='140158191566624'>, MagicMock)
+E        +    where <NonCallableMagicMock name='ChatGoogleGenerativeAI()' spec='ChatGoogleGenerativeAI' id='140158191566624'> = <app.services.rag_service.RagService object at 0x7f791fe2f380>.llm
+
+app/tests/test_rag_service.py:56: AssertionError
+_____________________ ERROR at setup of test_add_documents _____________________
+
+mock_tenant_id = UUID('09b59046-9b0f-41d1-8a77-b8c53d6dd4c1')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140158189661136'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140158189664784'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140158196763824'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140158199820272'>
+
+    @pytest.fixture
+    def rag_service(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceのフィクスチャ"""
+        service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+        # 依存するオブジェクトがモックであることを確認
+        # assert isinstance(service.global_vectorstore, (MagicMock, Mock)) # Flaky check
+        # assert isinstance(service.embeddings, MagicMock) # Flaky check with NonCallableMagicMock
+>       assert isinstance(service.llm, MagicMock)
+E       AssertionError: assert False
+E        +  where False = isinstance(<NonCallableMagicMock name='ChatGoogleGenerativeAI()' spec='ChatGoogleGenerativeAI' id='140158199823920'>, MagicMock)
+E        +    where <NonCallableMagicMock name='ChatGoogleGenerativeAI()' spec='ChatGoogleGenerativeAI' id='140158199823920'> = <app.services.rag_service.RagService object at 0x7f791f1b6990>.llm
+
+app/tests/test_rag_service.py:56: AssertionError
+__________________ ERROR at setup of test_stream_rag_response __________________
+
+mock_tenant_id = UUID('79858809-aec7-4f3f-9c0a-1c65f9371c61')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140158186299104'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140158186302704'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140158193123152'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140158182314384'>
+
+    @pytest.fixture
+    def rag_service(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceのフィクスチャ"""
+        service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+        # 依存するオブジェクトがモックであることを確認
+        # assert isinstance(service.global_vectorstore, (MagicMock, Mock)) # Flaky check
+        # assert isinstance(service.embeddings, MagicMock) # Flaky check with NonCallableMagicMock
+>       assert isinstance(service.llm, MagicMock)
+E       AssertionError: assert False
+E        +  where False = isinstance(<NonCallableMagicMock name='ChatGoogleGenerativeAI()' spec='ChatGoogleGenerativeAI' id='140158182313856'>, MagicMock)
+E        +    where <NonCallableMagicMock name='ChatGoogleGenerativeAI()' spec='ChatGoogleGenerativeAI' id='140158182313856'> = <app.services.rag_service.RagService object at 0x7f791ee81e80>.llm
+
+app/tests/test_rag_service.py:56: AssertionError
+=================================== FAILURES ===================================
+____________________ test_upload_file_ephemeral_rag_success ____________________
+
+override_get_current_user = None, override_get_file_service = None
+override_get_knowledge_document_repository = None
+override_get_rag_service = None
+mock_current_user = AuthenticatedUser(id=UUID('5b8b6ccf-28f9-492f-8e05-76f664c455e3'), tenant_id=UUID('dd75b00b-330f-4c75-9d00-04f5bf0d2bec'), email='test@example.com', is_active=True, is_admin=False)
+mock_file_service = <AsyncMock spec='FileService' id='140158289174720'>
+mock_knowledge_document_repository = <AsyncMock spec='KnowledgeDocumentRepository' id='140158289918048'>
+mock_rag_service = <AsyncMock spec='RagService' id='140158289918576'>
+
+    @pytest.mark.asyncio
+    async def test_upload_file_ephemeral_rag_success(
+        override_get_current_user,
+        override_get_file_service,
+        override_get_knowledge_document_repository,
+        override_get_rag_service,
+        mock_current_user,
+        mock_file_service,
+        mock_knowledge_document_repository,
+        mock_rag_service
+    ):
+        """
+        ファイルをアップロードし、Ephemeral RAGに登録する成功ケースをテストします。
+        """
+        file_content = b"This is a session-specific document."
+        mock_file = BytesIO(file_content)
+        file_name = "session_doc.md"
+        file_id = uuid4()
+        session_id = uuid4()
+    
+        mock_file_service.save_file.return_value = MagicMock(
+            id=file_id,
+            tenant_id=mock_current_user.tenant_id,
+            file_name=file_name,
+            file_path="/path/to/session_doc.md",
+            file_type="text/markdown",
+            file_size=str(len(file_content)),
+            uploaded_by_user_id=mock_current_user.id,
+            is_active=True
+        )
+        mock_file_service.extract_text_from_knowledge_document.return_value = file_content.decode("utf-8")
+        mock_knowledge_document_repository.create.return_value = FileUploadResponse(
+            id=file_id,
+            tenant_id=mock_current_user.tenant_id,
+            file_name=file_name,
+            file_path="/path/to/session_doc.md",
+            file_type="text/markdown",
+            file_size=str(len(file_content)),
+            uploaded_by_user_id=mock_current_user.id,
+            is_active=True,
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        )
+        mock_rag_service.add_documents_to_ephemeral_rag.return_value = None
+    
+        response = client.post(
+            f"/api/v1/files/upload?session_id={session_id}",
+            files={"file": (file_name, mock_file, "text/markdown")}
+        )
+    
+        assert response.status_code == 200
+        assert response.json()["file_name"] == file_name
+        mock_file_service.save_file.assert_awaited_once()
+        mock_file_service.extract_text_from_knowledge_document.assert_awaited_once()
+        mock_rag_service.add_documents_to_ephemeral_rag.assert_awaited_once_with(
+>           session_id, pytest.approx(pytest.any(), abs=0) # ANY replacement or just checking calls manually
+                                      ^^^^^^^^^^
+        )
+E       AttributeError: module 'pytest' has no attribute 'any'
+
+app/tests/test_endpoints_files.py:182: AttributeError
+_________________________ test_upload_file_no_filename _________________________
+
+override_get_current_user = None, override_get_file_service = None
+
+    @pytest.mark.asyncio
+    async def test_upload_file_no_filename(
+        override_get_current_user,
+        override_get_file_service,
+    ):
+        """
+        ファイル名がない場合のアップロード失敗ケースをテストします。
+        """
+>       response = client.post(
+            "/api/v1/files/upload",
+            files={"file": (None, BytesIO(b"content"), "text/plain")}
+        )
+
+app/tests/test_endpoints_files.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:538: in post
+    return super().post(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:340: in handle_request
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/testclient.py:337: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:326: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:257: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:112: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:714: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:734: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:291: in app
+    solved_result = await solve_dependencies(
+.venv/lib/python3.12/site-packages/fastapi/dependencies/utils.py:640: in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/concurrency.py:37: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/to_thread.py:61: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2525: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:986: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+app/dependencies.py:175: in get_rag_service
+    return RagService(tenant_id=current_user.tenant_id, llm_client=llm_client)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/services/rag_service.py:26: in __init__
+    self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_google_genai/embeddings.py:139: in validate_environment
+    self.client = build_generative_service(
+.venv/lib/python3.12/site-packages/langchain_google_genai/_genai_extension.py:360: in build_generative_service
+    return v1betaGenerativeServiceClient(**config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py:698: in __init__
+    self._transport = transport_init(
+.venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/transports/grpc.py:235: in __init__
+    super().__init__(
+.venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/transports/base.py:105: in __init__
+    credentials, _ = google.auth.default(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scopes = None, request = None, quota_project_id = None, default_scopes = ()
+
+    def default(scopes=None, request=None, quota_project_id=None, default_scopes=None):
+        """Gets the default credentials for the current environment.
+    
+        `Application Default Credentials`_ provides an easy way to obtain
+        credentials to call Google APIs for server-to-server or local applications.
+        This function acquires credentials from the environment in the following
+        order:
+    
+        1. If the environment variable ``GOOGLE_APPLICATION_CREDENTIALS`` is set
+           to the path of a valid service account JSON private key file, then it is
+           loaded and returned. The project ID returned is the project ID defined
+           in the service account file if available (some older files do not
+           contain project ID information).
+    
+           If the environment variable is set to the path of a valid external
+           account JSON configuration file (workload identity federation), then the
+           configuration file is used to determine and retrieve the external
+           credentials from the current environment (AWS, Azure, etc).
+           These will then be exchanged for Google access tokens via the Google STS
+           endpoint.
+           The project ID returned in this case is the one corresponding to the
+           underlying workload identity pool resource if determinable.
+    
+           If the environment variable is set to the path of a valid GDCH service
+           account JSON file (`Google Distributed Cloud Hosted`_), then a GDCH
+           credential will be returned. The project ID returned is the project
+           specified in the JSON file.
+        2. If the `Google Cloud SDK`_ is installed and has application default
+           credentials set they are loaded and returned.
+    
+           To enable application default credentials with the Cloud SDK run::
+    
+                gcloud auth application-default login
+    
+           If the Cloud SDK has an active project, the project ID is returned. The
+           active project can be set using::
+    
+                gcloud config set project
+    
+        3. If the application is running in the `App Engine standard environment`_
+           (first generation) then the credentials and project ID from the
+           `App Identity Service`_ are used.
+        4. If the application is running in `Compute Engine`_ or `Cloud Run`_ or
+           the `App Engine flexible environment`_ or the `App Engine standard
+           environment`_ (second generation) then the credentials and project ID
+           are obtained from the `Metadata Service`_.
+        5. If no credentials are found,
+           :class:`~google.auth.exceptions.DefaultCredentialsError` will be raised.
+    
+        .. _Application Default Credentials: https://developers.google.com\
+                /identity/protocols/application-default-credentials
+        .. _Google Cloud SDK: https://cloud.google.com/sdk
+        .. _App Engine standard environment: https://cloud.google.com/appengine
+        .. _App Identity Service: https://cloud.google.com/appengine/docs/python\
+                /appidentity/
+        .. _Compute Engine: https://cloud.google.com/compute
+        .. _App Engine flexible environment: https://cloud.google.com\
+                /appengine/flexible
+        .. _Metadata Service: https://cloud.google.com/compute/docs\
+                /storing-retrieving-metadata
+        .. _Cloud Run: https://cloud.google.com/run
+        .. _Google Distributed Cloud Hosted: https://cloud.google.com/blog/topics\
+                /hybrid-cloud/announcing-google-distributed-cloud-edge-and-hosted
+    
+        Example::
+    
+            import google.auth
+    
+            credentials, project_id = google.auth.default()
+    
+        Args:
+            scopes (Sequence[str]): The list of scopes for the credentials. If
+                specified, the credentials will automatically be scoped if
+                necessary.
+            request (Optional[google.auth.transport.Request]): An object used to make
+                HTTP requests. This is used to either detect whether the application
+                is running on Compute Engine or to determine the associated project
+                ID for a workload identity pool resource (external account
+                credentials). If not specified, then it will either use the standard
+                library http client to make requests for Compute Engine credentials
+                or a google.auth.transport.requests.Request client for external
+                account credentials.
+            quota_project_id (Optional[str]): The project ID used for
+                quota and billing.
+            default_scopes (Optional[Sequence[str]]): Default scopes passed by a
+                Google client library. Use 'scopes' for user-defined scopes.
+        Returns:
+            Tuple[~google.auth.credentials.Credentials, Optional[str]]:
+                the current environment's credentials and project ID. Project ID
+                may be None, which indicates that the Project ID could not be
+                ascertained from the environment.
+    
+        Raises:
+            ~google.auth.exceptions.DefaultCredentialsError:
+                If no credentials were found, or if the credentials found were
+                invalid.
+        """
+        from google.auth.credentials import with_scopes_if_required
+        from google.auth.credentials import CredentialsWithQuotaProject
+    
+        explicit_project_id = os.environ.get(
+            environment_vars.PROJECT, os.environ.get(environment_vars.LEGACY_PROJECT)
+        )
+    
+        checkers = (
+            # Avoid passing scopes here to prevent passing scopes to user credentials.
+            # with_scopes_if_required() below will ensure scopes/default scopes are
+            # safely set on the returned credentials since requires_scopes will
+            # guard against setting scopes on user credentials.
+            lambda: _get_explicit_environ_credentials(quota_project_id=quota_project_id),
+            lambda: _get_gcloud_sdk_credentials(quota_project_id=quota_project_id),
+            _get_gae_credentials,
+            lambda: _get_gce_credentials(request, quota_project_id=quota_project_id),
+        )
+    
+        for checker in checkers:
+            credentials, project_id = checker()
+            if credentials is not None:
+                credentials = with_scopes_if_required(
+                    credentials, scopes, default_scopes=default_scopes
+                )
+    
+                effective_project_id = explicit_project_id or project_id
+    
+                # For external account credentials, scopes are required to determine
+                # the project ID. Try to get the project ID again if not yet
+                # determined.
+                if not effective_project_id and callable(
+                    getattr(credentials, "get_project_id", None)
+                ):
+                    if request is None:
+                        import google.auth.transport.requests
+    
+                        request = google.auth.transport.requests.Request()
+                    effective_project_id = credentials.get_project_id(request=request)
+    
+                if quota_project_id and isinstance(
+                    credentials, CredentialsWithQuotaProject
+                ):
+                    credentials = credentials.with_quota_project(quota_project_id)
+    
+                if not effective_project_id:
+                    _LOGGER.warning(
+                        "No project ID could be determined. Consider running "
+                        "`gcloud config set project` or setting the %s "
+                        "environment variable",
+                        environment_vars.PROJECT,
+                    )
+                return credentials, effective_project_id
+    
+>       raise exceptions.DefaultCredentialsError(_CLOUD_SDK_MISSING_CREDENTIALS)
+E       google.auth.exceptions.DefaultCredentialsError: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+
+.venv/lib/python3.12/site-packages/google/auth/_default.py:739: DefaultCredentialsError
+______________________ test_upload_file_validation_error _______________________
+
+override_get_current_user = None, override_get_file_service = None
+mock_file_service = <AsyncMock spec='FileService' id='140158288941936'>
+
+    @pytest.mark.asyncio
+    async def test_upload_file_validation_error(
+        override_get_current_user,
+        override_get_file_service,
+        mock_file_service
+    ):
+        """
+        ファイルバリデーションエラー時のアップロード失敗ケースをテストします。
+        """
+        mock_file_service.save_file.side_effect = HTTPException(
+            status_code=413, detail="File size exceeds the limit."
+        )
+    
+>       response = client.post(
+            "/api/v1/files/upload",
+            files={"file": ("large_file.txt", BytesIO(b"a"* (settings.MAX_FILE_SIZE_MB * 1024 * 1024 + 1)), "text/plain")}
+        )
+
+app/tests/test_endpoints_files.py:219: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:538: in post
+    return super().post(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:340: in handle_request
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/testclient.py:337: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:326: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:257: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:112: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:714: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:734: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:291: in app
+    solved_result = await solve_dependencies(
+.venv/lib/python3.12/site-packages/fastapi/dependencies/utils.py:640: in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/concurrency.py:37: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/to_thread.py:61: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2525: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:986: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+app/dependencies.py:175: in get_rag_service
+    return RagService(tenant_id=current_user.tenant_id, llm_client=llm_client)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/services/rag_service.py:26: in __init__
+    self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_google_genai/embeddings.py:139: in validate_environment
+    self.client = build_generative_service(
+.venv/lib/python3.12/site-packages/langchain_google_genai/_genai_extension.py:360: in build_generative_service
+    return v1betaGenerativeServiceClient(**config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py:698: in __init__
+    self._transport = transport_init(
+.venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/transports/grpc.py:235: in __init__
+    super().__init__(
+.venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/transports/base.py:105: in __init__
+    credentials, _ = google.auth.default(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scopes = None, request = None, quota_project_id = None, default_scopes = ()
+
+    def default(scopes=None, request=None, quota_project_id=None, default_scopes=None):
+        """Gets the default credentials for the current environment.
+    
+        `Application Default Credentials`_ provides an easy way to obtain
+        credentials to call Google APIs for server-to-server or local applications.
+        This function acquires credentials from the environment in the following
+        order:
+    
+        1. If the environment variable ``GOOGLE_APPLICATION_CREDENTIALS`` is set
+           to the path of a valid service account JSON private key file, then it is
+           loaded and returned. The project ID returned is the project ID defined
+           in the service account file if available (some older files do not
+           contain project ID information).
+    
+           If the environment variable is set to the path of a valid external
+           account JSON configuration file (workload identity federation), then the
+           configuration file is used to determine and retrieve the external
+           credentials from the current environment (AWS, Azure, etc).
+           These will then be exchanged for Google access tokens via the Google STS
+           endpoint.
+           The project ID returned in this case is the one corresponding to the
+           underlying workload identity pool resource if determinable.
+    
+           If the environment variable is set to the path of a valid GDCH service
+           account JSON file (`Google Distributed Cloud Hosted`_), then a GDCH
+           credential will be returned. The project ID returned is the project
+           specified in the JSON file.
+        2. If the `Google Cloud SDK`_ is installed and has application default
+           credentials set they are loaded and returned.
+    
+           To enable application default credentials with the Cloud SDK run::
+    
+                gcloud auth application-default login
+    
+           If the Cloud SDK has an active project, the project ID is returned. The
+           active project can be set using::
+    
+                gcloud config set project
+    
+        3. If the application is running in the `App Engine standard environment`_
+           (first generation) then the credentials and project ID from the
+           `App Identity Service`_ are used.
+        4. If the application is running in `Compute Engine`_ or `Cloud Run`_ or
+           the `App Engine flexible environment`_ or the `App Engine standard
+           environment`_ (second generation) then the credentials and project ID
+           are obtained from the `Metadata Service`_.
+        5. If no credentials are found,
+           :class:`~google.auth.exceptions.DefaultCredentialsError` will be raised.
+    
+        .. _Application Default Credentials: https://developers.google.com\
+                /identity/protocols/application-default-credentials
+        .. _Google Cloud SDK: https://cloud.google.com/sdk
+        .. _App Engine standard environment: https://cloud.google.com/appengine
+        .. _App Identity Service: https://cloud.google.com/appengine/docs/python\
+                /appidentity/
+        .. _Compute Engine: https://cloud.google.com/compute
+        .. _App Engine flexible environment: https://cloud.google.com\
+                /appengine/flexible
+        .. _Metadata Service: https://cloud.google.com/compute/docs\
+                /storing-retrieving-metadata
+        .. _Cloud Run: https://cloud.google.com/run
+        .. _Google Distributed Cloud Hosted: https://cloud.google.com/blog/topics\
+                /hybrid-cloud/announcing-google-distributed-cloud-edge-and-hosted
+    
+        Example::
+    
+            import google.auth
+    
+            credentials, project_id = google.auth.default()
+    
+        Args:
+            scopes (Sequence[str]): The list of scopes for the credentials. If
+                specified, the credentials will automatically be scoped if
+                necessary.
+            request (Optional[google.auth.transport.Request]): An object used to make
+                HTTP requests. This is used to either detect whether the application
+                is running on Compute Engine or to determine the associated project
+                ID for a workload identity pool resource (external account
+                credentials). If not specified, then it will either use the standard
+                library http client to make requests for Compute Engine credentials
+                or a google.auth.transport.requests.Request client for external
+                account credentials.
+            quota_project_id (Optional[str]): The project ID used for
+                quota and billing.
+            default_scopes (Optional[Sequence[str]]): Default scopes passed by a
+                Google client library. Use 'scopes' for user-defined scopes.
+        Returns:
+            Tuple[~google.auth.credentials.Credentials, Optional[str]]:
+                the current environment's credentials and project ID. Project ID
+                may be None, which indicates that the Project ID could not be
+                ascertained from the environment.
+    
+        Raises:
+            ~google.auth.exceptions.DefaultCredentialsError:
+                If no credentials were found, or if the credentials found were
+                invalid.
+        """
+        from google.auth.credentials import with_scopes_if_required
+        from google.auth.credentials import CredentialsWithQuotaProject
+    
+        explicit_project_id = os.environ.get(
+            environment_vars.PROJECT, os.environ.get(environment_vars.LEGACY_PROJECT)
+        )
+    
+        checkers = (
+            # Avoid passing scopes here to prevent passing scopes to user credentials.
+            # with_scopes_if_required() below will ensure scopes/default scopes are
+            # safely set on the returned credentials since requires_scopes will
+            # guard against setting scopes on user credentials.
+            lambda: _get_explicit_environ_credentials(quota_project_id=quota_project_id),
+            lambda: _get_gcloud_sdk_credentials(quota_project_id=quota_project_id),
+            _get_gae_credentials,
+            lambda: _get_gce_credentials(request, quota_project_id=quota_project_id),
+        )
+    
+        for checker in checkers:
+            credentials, project_id = checker()
+            if credentials is not None:
+                credentials = with_scopes_if_required(
+                    credentials, scopes, default_scopes=default_scopes
+                )
+    
+                effective_project_id = explicit_project_id or project_id
+    
+                # For external account credentials, scopes are required to determine
+                # the project ID. Try to get the project ID again if not yet
+                # determined.
+                if not effective_project_id and callable(
+                    getattr(credentials, "get_project_id", None)
+                ):
+                    if request is None:
+                        import google.auth.transport.requests
+    
+                        request = google.auth.transport.requests.Request()
+                    effective_project_id = credentials.get_project_id(request=request)
+    
+                if quota_project_id and isinstance(
+                    credentials, CredentialsWithQuotaProject
+                ):
+                    credentials = credentials.with_quota_project(quota_project_id)
+    
+                if not effective_project_id:
+                    _LOGGER.warning(
+                        "No project ID could be determined. Consider running "
+                        "`gcloud config set project` or setting the %s "
+                        "environment variable",
+                        environment_vars.PROJECT,
+                    )
+                return credentials, effective_project_id
+    
+>       raise exceptions.DefaultCredentialsError(_CLOUD_SDK_MISSING_CREDENTIALS)
+E       google.auth.exceptions.DefaultCredentialsError: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+
+.venv/lib/python3.12/site-packages/google/auth/_default.py:739: DefaultCredentialsError
+_______________________ test_rag_service_initialization ________________________
+
+mock_tenant_id = UUID('d0e6c8a8-5775-43db-90a4-8d509d327be5')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140158289147232'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140158289135040'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140158204311024'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140158183954944'>
+
+    @pytest.mark.asyncio
+    async def test_rag_service_initialization(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceが正しく初期化されることをテスト"""
+        service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+    
+        mock_embeddings.assert_called_once_with(model="models/embedding-001")
+        mock_pgvector.assert_called_once_with(
+            collection_name=f"{settings.PG_COLLECTION_NAME}_{str(mock_tenant_id).replace('-', '_')}",
+            connection=settings.DATABASE_URL,
+            embeddings=mock_embeddings.return_value,
+        )
+        mock_chat_google_generative_ai.assert_called_once_with(model="gemini-pro")
+        assert service.tenant_id == mock_tenant_id
+        assert service.llm_client == mock_llm_client
+        assert service.global_retriever == mock_pgvector.return_value.as_retriever.return_value
+>       assert isinstance(service.rag_chain, RunnablePassthrough) # LCELチェーンが構築されていることを確認
+                          ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'RagService' object has no attribute 'rag_chain'
+
+app/tests/test_rag_service.py:80: AttributeError
+=============================== warnings summary ===============================
+app/schemas/auth.py:4
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/auth.py:4: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AuthenticatedUser(BaseModel):
+
+app/schemas/chat.py:15
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatMessageResponse(BaseModel):
+
+app/schemas/chat.py:36
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:36: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatSessionResponse(BaseModel):
+
+app/schemas/file.py:5
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/file.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FileUploadResponse(BaseModel):
+
+app/schemas/feedback.py:16
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/feedback.py:16: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FeedbackResponse(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED app/tests/test_endpoints_files.py::test_upload_file_ephemeral_rag_success
+FAILED app/tests/test_endpoints_files.py::test_upload_file_no_filename - goog...
+FAILED app/tests/test_endpoints_files.py::test_upload_file_validation_error
+FAILED app/tests/test_rag_service.py::test_rag_service_initialization - Attri...
+ERROR app/tests/test_rag_service.py::test_query_rag - AssertionError: assert ...
+ERROR app/tests/test_rag_service.py::test_add_documents - AssertionError: ass...
+ERROR app/tests/test_rag_service.py::test_stream_rag_response - AssertionErro...
+============= 4 failed, 47 passed, 5 warnings, 3 errors in 26.46s ==============

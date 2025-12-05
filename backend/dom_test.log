@@ -1,0 +1,61 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /home/masahiro/work/dom-enterprise-gateway/backend
+configfile: pyproject.toml
+plugins: langsmith-0.4.55, anyio-4.12.0, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collected 3 items
+
+app/tests/test_dom_orchestrator_service.py F
+
+=================================== FAILURES ===================================
+________________ test_process_chat_message_ic5_light_streaming _________________
+
+dom_orchestrator_service = <app.services.dom_orchestrator.DomOrchestratorService object at 0x7f610abe9250>
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140054768814704'>
+mock_answer_composer_service = <AsyncMock spec='AnswerComposerService' id='140054768816624'>
+mock_rag_service = <AsyncMock spec='RagService' id='140054768821376'>
+
+    @pytest.mark.asyncio
+    async def test_process_chat_message_ic5_light_streaming(
+        dom_orchestrator_service,
+        mock_llm_client,
+        mock_answer_composer_service,
+        mock_rag_service # New fixture
+    ):
+        """
+        DomOrchestratorServiceがLLM応答をIC-5ライト形式に整形してストリーミングするテスト。
+        (Research Mode OFF)
+        """
+        test_prompt = "Test prompt for IC-5"
+>       test_session_id = str(uuid4()) # strに変換
+                              ^^^^^
+E       NameError: name 'uuid4' is not defined
+
+app/tests/test_dom_orchestrator_service.py:41: NameError
+=============================== warnings summary ===============================
+app/schemas/auth.py:4
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/auth.py:4: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AuthenticatedUser(BaseModel):
+
+app/schemas/chat.py:15
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatMessageResponse(BaseModel):
+
+app/schemas/chat.py:36
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:36: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatSessionResponse(BaseModel):
+
+app/schemas/file.py:5
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/file.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FileUploadResponse(BaseModel):
+
+app/schemas/feedback.py:16
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/feedback.py:16: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FeedbackResponse(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED app/tests/test_dom_orchestrator_service.py::test_process_chat_message_ic5_light_streaming
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+======================== 1 failed, 5 warnings in 0.79s =========================

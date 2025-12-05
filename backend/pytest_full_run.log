@@ -1,0 +1,100 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /home/masahiro/work/dom-enterprise-gateway/backend
+configfile: pyproject.toml
+plugins: langsmith-0.4.55, anyio-4.12.0, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collected 29 items / 6 errors
+
+==================================== ERRORS ====================================
+______________ ERROR collecting app/tests/test_endpoints_admin.py ______________
+app/tests/test_endpoints_admin.py:7: in <module>
+    from app.main import app
+app/main.py:2: in <module>
+    from app.api.endpoints import auth, chat, files, admin, feedback # auth, chat, files, admin, feedbackルーターをインポート
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/api/endpoints/files.py:22: in <module>
+    session_id: Annotated[Optional[UUID], None] = None # Optional session_id for ephemeral RAG
+                          ^^^^^^^^
+E   NameError: name 'Optional' is not defined
+______________ ERROR collecting app/tests/test_endpoints_auth.py _______________
+app/tests/test_endpoints_auth.py:6: in <module>
+    from app.main import app
+app/main.py:2: in <module>
+    from app.api.endpoints import auth, chat, files, admin, feedback # auth, chat, files, admin, feedbackルーターをインポート
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/api/endpoints/files.py:22: in <module>
+    session_id: Annotated[Optional[UUID], None] = None # Optional session_id for ephemeral RAG
+                          ^^^^^^^^
+E   NameError: name 'Optional' is not defined
+______________ ERROR collecting app/tests/test_endpoints_chat.py _______________
+app/tests/test_endpoints_chat.py:8: in <module>
+    from app.main import app
+app/main.py:2: in <module>
+    from app.api.endpoints import auth, chat, files, admin, feedback # auth, chat, files, admin, feedbackルーターをインポート
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/api/endpoints/files.py:22: in <module>
+    session_id: Annotated[Optional[UUID], None] = None # Optional session_id for ephemeral RAG
+                          ^^^^^^^^
+E   NameError: name 'Optional' is not defined
+____________ ERROR collecting app/tests/test_endpoints_feedback.py _____________
+app/tests/test_endpoints_feedback.py:7: in <module>
+    from app.main import app
+app/main.py:2: in <module>
+    from app.api.endpoints import auth, chat, files, admin, feedback # auth, chat, files, admin, feedbackルーターをインポート
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/api/endpoints/files.py:22: in <module>
+    session_id: Annotated[Optional[UUID], None] = None # Optional session_id for ephemeral RAG
+                          ^^^^^^^^
+E   NameError: name 'Optional' is not defined
+______________ ERROR collecting app/tests/test_endpoints_files.py ______________
+app/tests/test_endpoints_files.py:7: in <module>
+    from app.main import app
+app/main.py:2: in <module>
+    from app.api.endpoints import auth, chat, files, admin, feedback # auth, chat, files, admin, feedbackルーターをインポート
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/api/endpoints/files.py:22: in <module>
+    session_id: Annotated[Optional[UUID], None] = None # Optional session_id for ephemeral RAG
+                          ^^^^^^^^
+E   NameError: name 'Optional' is not defined
+___________________ ERROR collecting app/tests/test_main.py ____________________
+app/tests/test_main.py:2: in <module>
+    from app.main import app
+app/main.py:2: in <module>
+    from app.api.endpoints import auth, chat, files, admin, feedback # auth, chat, files, admin, feedbackルーターをインポート
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/api/endpoints/files.py:22: in <module>
+    session_id: Annotated[Optional[UUID], None] = None # Optional session_id for ephemeral RAG
+                          ^^^^^^^^
+E   NameError: name 'Optional' is not defined
+=============================== warnings summary ===============================
+app/schemas/auth.py:4
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/auth.py:4: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AuthenticatedUser(BaseModel):
+
+app/schemas/chat.py:15
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatMessageResponse(BaseModel):
+
+app/schemas/chat.py:36
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:36: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatSessionResponse(BaseModel):
+
+app/schemas/file.py:5
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/file.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FileUploadResponse(BaseModel):
+
+app/schemas/feedback.py:16
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/feedback.py:16: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FeedbackResponse(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR app/tests/test_endpoints_admin.py - NameError: name 'Optional' is not d...
+ERROR app/tests/test_endpoints_auth.py - NameError: name 'Optional' is not de...
+ERROR app/tests/test_endpoints_chat.py - NameError: name 'Optional' is not de...
+ERROR app/tests/test_endpoints_feedback.py - NameError: name 'Optional' is no...
+ERROR app/tests/test_endpoints_files.py - NameError: name 'Optional' is not d...
+ERROR app/tests/test_main.py - NameError: name 'Optional' is not defined
+!!!!!!!!!!!!!!!!!!! Interrupted: 6 errors during collection !!!!!!!!!!!!!!!!!!!!
+======================== 5 warnings, 6 errors in 1.23s =========================

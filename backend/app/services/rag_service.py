@@ -28,8 +28,8 @@ class RagService:
         # グローバルPGVectorストアの初期化
         self.global_vectorstore = PGVector(
             collection_name=self.global_collection_name,
-            connection_string=settings.DATABASE_URL,
-            embedding=self.embeddings,
+            connection=settings.DATABASE_URL,
+            embeddings=self.embeddings,
         )
         self.global_retriever = self.global_vectorstore.as_retriever()
 
@@ -61,8 +61,8 @@ class RagService:
             ephemeral_collection_name = self._get_ephemeral_collection_name(session_id)
             self._ephemeral_vectorstores[session_id] = PGVector(
                 collection_name=ephemeral_collection_name,
-                connection_string=settings.DATABASE_URL,
-                embedding=self.embeddings,
+                connection=settings.DATABASE_URL,
+                embeddings=self.embeddings,
             )
         return self._ephemeral_vectorstores[session_id]
 

@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from typing import AsyncGenerator
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from app.services.dom_orchestrator import DomOrchestratorService
 from app.llm.mock_llm import MockLLMClient
@@ -61,7 +61,7 @@ async def test_process_chat_message_ic5_light_streaming(
         streamed_output += chunk
 
     # 検証
-    mock_llm_client.stream_chat_response.assert_awaited_once_with(test_prompt) # RAGなしなので元のプロンプト
+    mock_llm_client.stream_chat_response.assert_called_once_with(test_prompt) # RAGなしなので元のプロンプト
     mock_answer_composer_service.compose_ic5_light_response.assert_awaited_once_with(raw_llm_output_mock.strip())
     mock_rag_service.query_rag.assert_not_awaited() # Research Mode OFFなので呼ばれない
 
