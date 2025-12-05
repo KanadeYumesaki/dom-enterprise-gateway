@@ -1,0 +1,65 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0 -- /home/masahiro/work/dom-enterprise-gateway/backend/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/masahiro/work/dom-enterprise-gateway/backend
+configfile: pyproject.toml
+plugins: langsmith-0.4.55, anyio-4.12.0, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collecting ... collected 0 items / 1 error
+
+==================================== ERRORS ====================================
+_______________ ERROR collecting app/tests/test_auth_service.py ________________
+app/tests/test_auth_service.py:6: in <module>
+    from app.services.auth import AuthService
+app/services/__init__.py:1: in <module>
+    from .auth import AuthService
+app/services/auth.py:14: in <module>
+    from app.repositories.user import UserRepository
+app/repositories/__init__.py:1: in <module>
+    from .base import BaseRepository
+app/repositories/base.py:5: in <module>
+    from app.core.database import Base # Baseをインポート
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/core/database.py:21: in <module>
+    engine = create_async_engine(DATABASE_URL, echo=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/engine.py:120: in create_async_engine
+    sync_engine = _create_engine(url, **kw)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:2: in create_engine
+    ???
+.venv/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py:281: in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py:564: in create_engine
+    u = _url.make_url(url)
+        ^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/url.py:860: in make_url
+    raise exc.ArgumentError(
+E   sqlalchemy.exc.ArgumentError: Expected string or URL object, got None
+=============================== warnings summary ===============================
+app/schemas/auth.py:4
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/auth.py:4: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AuthenticatedUser(BaseModel):
+
+app/schemas/chat.py:15
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatMessageResponse(BaseModel):
+
+app/schemas/chat.py:36
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:36: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatSessionResponse(BaseModel):
+
+app/schemas/file.py:5
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/file.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FileUploadResponse(BaseModel):
+
+app/schemas/feedback.py:16
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/feedback.py:16: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FeedbackResponse(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR app/tests/test_auth_service.py - sqlalchemy.exc.ArgumentError: Expected string or URL object, got None
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+========================= 5 warnings, 1 error in 0.36s =========================
