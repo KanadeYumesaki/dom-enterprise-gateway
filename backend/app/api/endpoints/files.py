@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 from uuid import UUID
 
 from app.schemas.file import FileUploadResponse

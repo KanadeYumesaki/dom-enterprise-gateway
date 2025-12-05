@@ -212,7 +212,7 @@ async def test_stream_chat_response_success(
 
     response = client.get(f"/api/v1/chat/stream/{session_id}?research_mode=false") # research_mode=falseを明示的に渡す
     assert response.status_code == 200
-    assert response.headers["content-type"] == "text/event-stream"
+    assert response.headers["content-type"].startswith("text/event-stream")
 
     full_response_content = ""
     for chunk in response.iter_bytes():
@@ -230,7 +230,7 @@ async def test_stream_chat_response_success(
 
     mock_chat_session_repo.get.assert_awaited_once_with(session_id)
     mock_chat_message_repo.get_by_session_id.assert_awaited_once_with(session_id)
-    mock_dom_orchestrator_service.process_chat_message.assert_awaited_once_with("Test prompt", str(session_id), False) # Falseを検証
+    mock_dom_orchestrator_service.process_chat_message.assert_called_once_with("Test prompt", str(session_id), False) # Falseを検証
     mock_chat_message_repo.create.assert_awaited_once_with({
         "session_id": session_id,
         "role": "assistant",
@@ -275,7 +275,7 @@ async def test_stream_chat_response_research_mode_on(
 
     response = client.get(f"/api/v1/chat/stream/{session_id}?research_mode=true") # research_mode=trueを渡す
     assert response.status_code == 200
-    assert response.headers["content-type"] == "text/event-stream"
+    assert response.headers["content-type"].startswith("text/event-stream")
 
     full_response_content = ""
     for chunk in response.iter_bytes():
@@ -293,7 +293,7 @@ async def test_stream_chat_response_research_mode_on(
 
     mock_chat_session_repo.get.assert_awaited_once_with(session_id)
     mock_chat_message_repo.get_by_session_id.assert_awaited_once_with(session_id)
-    mock_dom_orchestrator_service.process_chat_message.assert_awaited_once_with("Research prompt", str(session_id), True) # Trueを検証
+    mock_dom_orchestrator_service.process_chat_message.assert_called_once_with("Research prompt", str(session_id), True) # Trueを検証
     mock_chat_message_repo.create.assert_awaited_once_with({
         "session_id": session_id,
         "role": "assistant",

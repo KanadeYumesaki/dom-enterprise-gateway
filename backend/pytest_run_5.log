@@ -1,0 +1,754 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /home/masahiro/work/dom-enterprise-gateway/backend
+configfile: pyproject.toml
+plugins: langsmith-0.4.55, anyio-4.12.0, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collected 54 items
+
+app/tests/test_auth_service.py ......                                    [ 11%]
+app/tests/test_chat_service.py ...                                       [ 16%]
+app/tests/test_dom_orchestrator_service.py ...                           [ 22%]
+app/tests/test_endpoints_admin.py ...                                    [ 27%]
+app/tests/test_endpoints_auth.py .....                                   [ 37%]
+app/tests/test_endpoints_chat.py ......F                                 [ 50%]
+app/tests/test_endpoints_feedback.py FFFFF                               [ 59%]
+app/tests/test_endpoints_files.py FFFF                                   [ 66%]
+app/tests/test_main.py .                                                 [ 68%]
+app/tests/test_memory_service.py .......                                 [ 81%]
+app/tests/test_rag_service.py FEEE                                       [ 88%]
+app/tests/test_repositories.py FF.FFF                                    [100%]
+
+==================================== ERRORS ====================================
+_______________________ ERROR at setup of test_query_rag _______________________
+
+mock_tenant_id = UUID('4562e490-9a9a-44f1-94a9-26423bbbad8e')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140484014074256'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140484014069456'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140484018074544'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140484093712368'>
+
+    @pytest.fixture
+    def rag_service(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceのフィクスチャ"""
+        service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+        # 依存するオブジェクトがモックであることを確認
+>       assert isinstance(service.vectorstore, MagicMock)
+                          ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'RagService' object has no attribute 'vectorstore'
+
+app/tests/test_rag_service.py:54: AttributeError
+_____________________ ERROR at setup of test_add_documents _____________________
+
+mock_tenant_id = UUID('89a7472c-92b3-4116-8749-725c064b1416')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140484092244432'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140484092247744'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140484016444080'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140484088739312'>
+
+    @pytest.fixture
+    def rag_service(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceのフィクスチャ"""
+        service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+        # 依存するオブジェクトがモックであることを確認
+>       assert isinstance(service.vectorstore, MagicMock)
+                          ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'RagService' object has no attribute 'vectorstore'
+
+app/tests/test_rag_service.py:54: AttributeError
+__________________ ERROR at setup of test_stream_rag_response __________________
+
+mock_tenant_id = UUID('86b99ca1-a1ef-4b99-bb16-e6bfe7541c09')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140484011486880'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140484011490528'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140484010944576'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140484010478528'>
+
+    @pytest.fixture
+    def rag_service(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceのフィクスチャ"""
+        service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+        # 依存するオブジェクトがモックであることを確認
+>       assert isinstance(service.vectorstore, MagicMock)
+                          ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'RagService' object has no attribute 'vectorstore'
+
+app/tests/test_rag_service.py:54: AttributeError
+=================================== FAILURES ===================================
+________________ test_stream_chat_response_unauthorized_session ________________
+
+override_get_current_user = None, override_get_chat_session_repository = None
+mock_current_user = AuthenticatedUser(id=UUID('8b1f7ca3-227c-4da8-b8c6-56d69d4a2718'), tenant_id=UUID('aa1cd887-f8ba-400f-a63a-2799efba3a92'), email='test@example.com', is_active=True, is_admin=False)
+mock_chat_session_repo = <AsyncMock spec='ChatSessionRepository' id='140484113297056'>
+
+    @pytest.mark.asyncio
+    async def test_stream_chat_response_unauthorized_session(
+        override_get_current_user,
+        override_get_chat_session_repository,
+        mock_current_user,
+        mock_chat_session_repo
+    ):
+        """
+        チャット応答ストリーミングAPIのセッション権限なしケースをテストします。
+        """
+        session_id = uuid4()
+        # Mock for existing session check (user_id mismatch)
+        mock_chat_session_repo.get.return_value = ChatSessionResponse(
+            id=session_id, user_id=uuid4(), tenant_id=mock_current_user.tenant_id, title="Other User's Session", is_active=True, created_at=datetime.now(), updated_at=datetime.now()
+        )
+    
+>       response = client.get(f"/api/v1/chat/stream/{session_id}")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+app/tests/test_endpoints_chat.py:319: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:465: in get
+    return super().get(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1066: in get
+    return self.request(
+.venv/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:340: in handle_request
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/testclient.py:337: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:326: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:257: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:112: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:714: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:734: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:291: in app
+    solved_result = await solve_dependencies(
+.venv/lib/python3.12/site-packages/fastapi/dependencies/utils.py:615: in solve_dependencies
+    solved_result = await solve_dependencies(
+.venv/lib/python3.12/site-packages/fastapi/dependencies/utils.py:640: in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/concurrency.py:37: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/to_thread.py:61: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2525: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:986: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def get_answer_composer_service() -> AnswerComposerService:
+        """
+        AnswerComposerServiceの依存性注入を提供します。
+        """
+>       return AnswerComposerService()
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: AnswerComposerService.__init__() takes 0 positional arguments but 1 was given
+
+app/dependencies.py:166: TypeError
+_________________________ test_submit_feedback_success _________________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_current_user = AuthenticatedUser(id=UUID('8a519e87-e4fc-4d2c-bbed-f47f26b07e59'), tenant_id=UUID('b6ce7c78-e6fa-4a19-8562-7b8448f3a752'), email='test@example.com', is_active=True, is_admin=False)
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140484113872608'>
+
+    @pytest.mark.asyncio
+    async def test_submit_feedback_success(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_current_user,
+        mock_feedback_service
+    ):
+        """
+        フィードバック送信APIの成功ケースをテストします。
+        """
+        feedback_id = uuid4()
+        session_id = uuid4()
+        message_id = uuid4()
+        feedback_data = FeedbackCreate(
+            session_id=session_id,
+            message_id=message_id,
+            rating=1,
+            comment="Great response!"
+        )
+        mock_feedback_service.create_feedback.return_value = FeedbackResponse(
+            id=feedback_id,
+            tenant_id=mock_current_user.tenant_id,
+            user_id=mock_current_user.id,
+            session_id=session_id,
+            message_id=message_id,
+            rating=feedback_data.rating,
+            comment=feedback_data.comment,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
+        )
+    
+>       response = client.post("/api/v1/feedback", json=feedback_data.model_dump())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+app/tests/test_endpoints_feedback.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:538: in post
+    return super().post(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:824: in request
+    request = self.build_request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:358: in build_request
+    return Request(
+.venv/lib/python3.12/site-packages/httpx/_models.py:342: in __init__
+    headers, stream = encode_request(
+.venv/lib/python3.12/site-packages/httpx/_content.py:214: in encode_request
+    return encode_json(json)
+           ^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_content.py:177: in encode_json
+    body = json_dumps(json).encode("utf-8")
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/__init__.py:231: in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/encoder.py:200: in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/encoder.py:258: in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.encoder.JSONEncoder object at 0x7fc54b0f9d60>
+o = UUID('e09386b5-4f5a-4e48-870d-5bd7b5091abe')
+
+    def default(self, o):
+        """Implement this method in a subclass such that it returns
+        a serializable object for ``o``, or calls the base implementation
+        (to raise a ``TypeError``).
+    
+        For example, to support arbitrary iterators, you could
+        implement default like this::
+    
+            def default(self, o):
+                try:
+                    iterable = iter(o)
+                except TypeError:
+                    pass
+                else:
+                    return list(iterable)
+                # Let the base class default method raise the TypeError
+                return super().default(o)
+    
+        """
+>       raise TypeError(f'Object of type {o.__class__.__name__} '
+                        f'is not JSON serializable')
+E       TypeError: Object of type UUID is not JSON serializable
+
+/usr/lib/python3.12/json/encoder.py:180: TypeError
+____________________ test_get_feedback_for_session_success _____________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_current_user = AuthenticatedUser(id=UUID('34929f09-55c3-441c-be8c-3f00061468d1'), tenant_id=UUID('ff420919-be38-443b-8ba7-648c42f73405'), email='test@example.com', is_active=True, is_admin=False)
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140484113290864'>
+
+    @pytest.mark.asyncio
+    async def test_get_feedback_for_session_success(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_current_user,
+        mock_feedback_service
+    ):
+        """
+        セッションIDによるフィードバック取得の成功ケースをテストします。
+        """
+        session_id = uuid4()
+        feedback_1 = FeedbackResponse(
+            id=uuid4(), tenant_id=mock_current_user.tenant_id, user_id=mock_current_user.id, session_id=session_id,
+            rating=1, comment="Good", created_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc)
+        )
+        feedback_2 = FeedbackResponse(
+            id=uuid4(), tenant_id=mock_current_user.tenant_id, user_id=mock_current_user.id, session_id=session_id,
+            rating=-1, comment="Bad", created_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc)
+        )
+        mock_feedback_service.get_feedback_by_session_id.return_value = [feedback_1, feedback_2]
+    
+        response = client.get(f"/api/v1/feedback/{session_id}")
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+app/tests/test_endpoints_feedback.py:108: AssertionError
+____________________ test_get_feedback_for_message_success _____________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_current_user = AuthenticatedUser(id=UUID('44e408b4-56c0-4f9b-a545-513c277bc787'), tenant_id=UUID('b95bf486-2d02-4a4a-a840-d1dd5c410d92'), email='test@example.com', is_active=True, is_admin=False)
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140484113981440'>
+
+    @pytest.mark.asyncio
+    async def test_get_feedback_for_message_success(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_current_user,
+        mock_feedback_service
+    ):
+        """
+        メッセージIDによるフィードバック取得の成功ケースをテストします。
+        """
+        message_id = uuid4()
+        feedback = FeedbackResponse(
+            id=uuid4(), tenant_id=mock_current_user.tenant_id, user_id=mock_current_user.id, session_id=uuid4(),
+            message_id=message_id, rating=1, comment="Very helpful", created_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc)
+        )
+        mock_feedback_service.get_feedback_by_message_id.return_value = feedback
+    
+        response = client.get(f"/api/v1/feedback/message/{message_id}")
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+app/tests/test_endpoints_feedback.py:131: AssertionError
+___________________ test_get_feedback_for_message_not_found ____________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140484114024256'>
+
+    @pytest.mark.asyncio
+    async def test_get_feedback_for_message_not_found(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_feedback_service
+    ):
+        """
+        メッセージIDによるフィードバックが見つからない場合のテスト。
+        """
+        message_id = uuid4()
+        mock_feedback_service.get_feedback_by_message_id.return_value = None
+    
+        response = client.get(f"/api/v1/feedback/message/{message_id}")
+>       assert response.status_code == 200 # Optional[FeedbackResponse]なのでNoneを返す場合は200
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+app/tests/test_endpoints_feedback.py:148: AssertionError
+__________________ test_get_feedback_for_message_unauthorized __________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140484114094304'>
+
+    @pytest.mark.asyncio
+    async def test_get_feedback_for_message_unauthorized(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_feedback_service
+    ):
+        """
+        メッセージIDによるフィードバック取得で権限がない場合のテスト。
+        """
+        message_id = uuid4()
+        # 別のテナントのフィードバックを返すようにモック
+        unauthorized_feedback = FeedbackResponse(
+            id=uuid4(), tenant_id=uuid4(), user_id=uuid4(), session_id=uuid4(),
+            message_id=message_id, rating=1, comment="Not yours", created_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc)
+        )
+        mock_feedback_service.get_feedback_by_message_id.return_value = unauthorized_feedback
+    
+        response = client.get(f"/api/v1/feedback/message/{message_id}")
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+app/tests/test_endpoints_feedback.py:170: AssertionError
+_____________________ test_upload_file_global_rag_success ______________________
+
+override_get_current_user = None, override_get_file_service = None
+override_get_knowledge_document_repository = None
+override_get_rag_service = None
+mock_current_user = AuthenticatedUser(id=UUID('fb55f48d-4f62-4944-b8d2-117c5666484f'), tenant_id=UUID('fb800476-2715-421b-84cb-353cf1167a8a'), email='test@example.com', is_active=True, is_admin=False)
+mock_file_service = <AsyncMock spec='FileService' id='140484114094016'>
+mock_knowledge_document_repository = <AsyncMock spec='KnowledgeDocumentRepository' id='140484114093728'>
+mock_rag_service = <AsyncMock spec='RagService' id='140484114098672'>
+
+    @pytest.mark.asyncio
+    async def test_upload_file_global_rag_success(
+        override_get_current_user,
+        override_get_file_service,
+        override_get_knowledge_document_repository,
+        override_get_rag_service,
+        mock_current_user,
+        mock_file_service,
+        mock_knowledge_document_repository,
+        mock_rag_service
+    ):
+        """
+        ファイルをアップロードし、グローバルRAGに登録する成功ケースをテストします。
+        """
+        file_content = b"This is a test document."
+        mock_file = BytesIO(file_content)
+        file_name = "test.txt"
+        file_id = uuid4()
+    
+>       mock_file_service.save_file.return_value = MagicMock(
+                                                   ^^^^^^^^^
+            id=file_id,
+            tenant_id=mock_current_user.tenant_id,
+            file_name=file_name,
+            file_path="/path/to/test.txt",
+            file_type="text/plain",
+            file_size=str(len(file_content)),
+            uploaded_by_user_id=mock_current_user.id,
+            is_active=True
+        )
+E       NameError: name 'MagicMock' is not defined
+
+app/tests/test_endpoints_files.py:86: NameError
+____________________ test_upload_file_ephemeral_rag_success ____________________
+
+override_get_current_user = None, override_get_file_service = None
+override_get_knowledge_document_repository = None
+override_get_rag_service = None
+mock_current_user = AuthenticatedUser(id=UUID('e5ec2944-12c8-4a01-8bf2-708bdef80345'), tenant_id=UUID('6c2e1ddc-20cf-439d-841a-e5e26d2bb07f'), email='test@example.com', is_active=True, is_admin=False)
+mock_file_service = <AsyncMock spec='FileService' id='140484114240320'>
+mock_knowledge_document_repository = <AsyncMock spec='KnowledgeDocumentRepository' id='140484114247760'>
+mock_rag_service = <AsyncMock spec='RagService' id='140484114248384'>
+
+    @pytest.mark.asyncio
+    async def test_upload_file_ephemeral_rag_success(
+        override_get_current_user,
+        override_get_file_service,
+        override_get_knowledge_document_repository,
+        override_get_rag_service,
+        mock_current_user,
+        mock_file_service,
+        mock_knowledge_document_repository,
+        mock_rag_service
+    ):
+        """
+        ファイルをアップロードし、Ephemeral RAGに登録する成功ケースをテストします。
+        """
+        file_content = b"This is a session-specific document."
+        mock_file = BytesIO(file_content)
+        file_name = "session_doc.md"
+        file_id = uuid4()
+        session_id = uuid4()
+    
+>       mock_file_service.save_file.return_value = MagicMock(
+                                                   ^^^^^^^^^
+            id=file_id,
+            tenant_id=mock_current_user.tenant_id,
+            file_name=file_name,
+            file_path="/path/to/session_doc.md",
+            file_type="text/markdown",
+            file_size=str(len(file_content)),
+            uploaded_by_user_id=mock_current_user.id,
+            is_active=True
+        )
+E       NameError: name 'MagicMock' is not defined
+
+app/tests/test_endpoints_files.py:144: NameError
+_________________________ test_upload_file_no_filename _________________________
+
+override_get_current_user = None, override_get_file_service = None
+
+    @pytest.mark.asyncio
+    async def test_upload_file_no_filename(
+        override_get_current_user,
+        override_get_file_service,
+    ):
+        """
+        ファイル名がない場合のアップロード失敗ケースをテストします。
+        """
+        response = client.post(
+            "/api/v1/files/upload",
+            files={"file": (None, BytesIO(b"content"), "text/plain")}
+        )
+        assert response.status_code == 400
+>       assert "No file name provided." in response.json()["detail"]
+E       AssertionError: assert 'No file name provided.' in 'There was an error parsing the body'
+
+app/tests/test_endpoints_files.py:197: AssertionError
+______________________ test_upload_file_validation_error _______________________
+
+override_get_current_user = None, override_get_file_service = None
+
+    @pytest.mark.asyncio
+    async def test_upload_file_validation_error(
+        override_get_current_user,
+        override_get_file_service,
+    ):
+        """
+        ファイルバリデーションエラー時のアップロード失敗ケースをテストします。
+        """
+>       mock_file_service.save_file.side_effect = HTTPException(
+                                                  ^^^^^^^^^^^^^
+            status_code=413, detail="File size exceeds the limit."
+        )
+E       NameError: name 'HTTPException' is not defined
+
+app/tests/test_endpoints_files.py:208: NameError
+_______________________ test_rag_service_initialization ________________________
+TypeError: missing a required argument: 'embeddings'
+
+The above exception was the direct cause of the following exception:
+
+mock_tenant_id = UUID('4258368e-6c6b-4137-92b8-49f78c640586')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140484112988160'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140484112965440'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140484085899936'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140484094920320'>
+
+    @pytest.mark.asyncio
+    async def test_rag_service_initialization(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceが正しく初期化されることをテスト"""
+        service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+    
+        mock_embeddings.assert_called_once_with(model="models/embedding-001")
+>       mock_pgvector.assert_called_once_with(
+            collection_name=f"{settings.PG_COLLECTION_NAME}_{str(mock_tenant_id).replace('-', '_')}",
+            connection_string=settings.DATABASE_URL,
+            embedding=mock_embeddings.return_value,
+        )
+
+app/tests/test_rag_service.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/unittest/mock.py:956: in assert_called_once_with
+    return self.assert_called_with(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <MagicMock name='PGVector' spec='PGVector' id='140484112965440'>
+args = ()
+kwargs = {'collection_name': 'llm_documents_4258368e_6c6b_4137_92b8_49f78c640586', 'connection_string': 'postgresql+asyncpg://u... <NonCallableMagicMock name='GoogleGenerativeAIEmbeddings()' spec='GoogleGenerativeAIEmbeddings' id='140484085903488'>}
+expected = TypeError("missing a required argument: 'embeddings'")
+actual = call('', (<NonCallableMagicMock name='GoogleGenerativeAIEmbeddings()' spec='GoogleGenerativeAIEmbeddings' id='14048408...://user:password@localhost:5432/dom_gateway', 'collection_name': 'llm_documents_4258368e_6c6b_4137_92b8_49f78c640586'})
+_error_message = <function NonCallableMock.assert_called_with.<locals>._error_message at 0x7fc50010a020>
+cause = TypeError("missing a required argument: 'embeddings'")
+
+    def assert_called_with(self, /, *args, **kwargs):
+        """assert that the last call was made with the specified arguments.
+    
+        Raises an AssertionError if the args and keyword args passed in are
+        different to the last call to the mock."""
+        if self.call_args is None:
+            expected = self._format_mock_call_signature(args, kwargs)
+            actual = 'not called.'
+            error_message = ('expected call not found.\nExpected: %s\n  Actual: %s'
+                    % (expected, actual))
+            raise AssertionError(error_message)
+    
+        def _error_message():
+            msg = self._format_mock_failure_message(args, kwargs)
+            return msg
+        expected = self._call_matcher(_Call((args, kwargs), two=True))
+        actual = self._call_matcher(self.call_args)
+        if actual != expected:
+            cause = expected if isinstance(expected, Exception) else None
+>           raise AssertionError(_error_message()) from cause
+E           AssertionError: expected call not found.
+E           Expected: PGVector(collection_name='llm_documents_4258368e_6c6b_4137_92b8_49f78c640586', connection_string='postgresql+asyncpg://user:password@localhost:5432/dom_gateway', embedding=<NonCallableMagicMock name='GoogleGenerativeAIEmbeddings()' spec='GoogleGenerativeAIEmbeddings' id='140484085903488'>)
+E             Actual: PGVector(collection_name='llm_documents_4258368e_6c6b_4137_92b8_49f78c640586', connection='postgresql+asyncpg://user:password@localhost:5432/dom_gateway', embeddings=<NonCallableMagicMock name='GoogleGenerativeAIEmbeddings()' spec='GoogleGenerativeAIEmbeddings' id='140484085903488'>)
+
+/usr/lib/python3.12/unittest/mock.py:944: AssertionError
+__________________ test_base_repository_get_no_tenant_filter ___________________
+
+base_repo_no_tenant = <app.repositories.base.BaseRepository object at 0x7fc5002602f0>
+mock_session = <AsyncMock spec='AsyncSession' id='140484087776176'>
+
+    @pytest.mark.asyncio
+    async def test_base_repository_get_no_tenant_filter(base_repo_no_tenant, mock_session):
+        """BaseRepository.get() (tenant_idなし)のテスト"""
+        test_id = uuid4()
+        mock_tenant = Tenant(id=test_id, name="Test Tenant")
+        mock_session.execute.return_value.scalar_one_or_none.return_value = mock_tenant
+    
+        tenant = await base_repo_no_tenant.get(test_id)
+>       assert tenant == mock_tenant
+E       AssertionError: assert <coroutine object AsyncMockMixin._execute_mock_call at 0x7fc501c32e40> == <Tenant(id='0ad9cc8d-5b87-4b8f-9bca-6e42912b7e05', name='Test Tenant')>
+
+app/tests/test_repositories.py:53: AssertionError
+_________________ test_base_repository_get_with_tenant_filter __________________
+
+base_repo_with_tenant = <app.repositories.base.BaseRepository object at 0x7fc50024d0d0>
+mock_session = <AsyncMock spec='AsyncSession' id='140484087694016'>
+
+    @pytest.mark.asyncio
+    async def test_base_repository_get_with_tenant_filter(base_repo_with_tenant, mock_session):
+        """BaseRepository.get() (tenant_idあり)のテスト"""
+        test_id = uuid4()
+        mock_user = User(id=test_id, tenant_id=base_repo_with_tenant.tenant_id, email="a@b.com", hashed_password="pw")
+        mock_session.execute.return_value.scalar_one_or_none.return_value = mock_user
+    
+        user = await base_repo_with_tenant.get(test_id)
+>       assert user == mock_user
+E       AssertionError: assert <coroutine object AsyncMockMixin._execute_mock_call at 0x7fc5004ee540> == <User(id='61bf940a-b5a8-45d7-a9ef-87f92c515342', email='a@b.com', tenant_id='0a40ab51-824b-498d-bd17-6034fd156790')>
+
+app/tests/test_repositories.py:65: AssertionError
+______________________ test_tenant_repository_get_by_name ______________________
+
+tenant_repo = <app.repositories.tenant.TenantRepository object at 0x7fc5002c0110>
+mock_session = <AsyncMock spec='AsyncSession' id='140484088168768'>
+
+    @pytest.mark.asyncio
+    async def test_tenant_repository_get_by_name(tenant_repo, mock_session):
+        """TenantRepository.get_by_name()のテスト (tenant_idフィルタなし)"""
+        test_name = "Unique Tenant"
+        mock_tenant = Tenant(id=uuid4(), name=test_name)
+        mock_session.execute.return_value.scalar_one_or_none.return_value = mock_tenant
+    
+        tenant = await tenant_repo.get_by_name(test_name)
+>       assert tenant == mock_tenant
+E       AssertionError: assert <coroutine object AsyncMockMixin._execute_mock_call at 0x7fc5006ba540> == <Tenant(id='cd596131-d2ee-408d-9637-ff216ee38e5c', name='Unique Tenant')>
+
+app/tests/test_repositories.py:98: AssertionError
+________________ test_user_repository_get_by_email_with_tenant _________________
+
+/home/masahiro/work/dom-enterprise-gateway/backend/.venv/lib/python3.12/site-packages/_pytest/unraisableexception.py:33: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  gc.collect()
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+user_repo_with_tenant = <app.repositories.user.UserRepository object at 0x7fc5002c0590>
+mock_session = <AsyncMock spec='AsyncSession' id='140484088176112'>
+
+    @pytest.mark.asyncio
+    async def test_user_repository_get_by_email_with_tenant(user_repo_with_tenant, mock_session):
+        """UserRepository.get_by_email() (tenant_idあり)のテスト"""
+        test_email = "test@example.com"
+        mock_user = User(id=uuid4(), tenant_id=user_repo_with_tenant.tenant_id, email=test_email, hashed_password="pw")
+        mock_session.execute.return_value.scalar_one_or_none.return_value = mock_user
+    
+        user = await user_repo_with_tenant.get_by_email(test_email)
+>       assert user == mock_user
+E       AssertionError: assert <coroutine object AsyncMockMixin._execute_mock_call at 0x7fc5006b9c40> == <User(id='99b39503-f3c5-488d-a56e-e7a06f716a13', email='test@example.com', tenant_id='c9990ee7-fcc9-451f-93c4-d0a646ea08ca')>
+
+app/tests/test_repositories.py:112: AssertionError
+_________________ test_user_repository_get_by_email_no_tenant __________________
+
+user_repo_no_tenant = <app.repositories.user.UserRepository object at 0x7fc5002b4110>
+mock_session = <AsyncMock spec='AsyncSession' id='140484088119712'>
+
+    @pytest.mark.asyncio
+    async def test_user_repository_get_by_email_no_tenant(user_repo_no_tenant, mock_session):
+        """UserRepository.get_by_email() (tenant_idなし)のテスト"""
+        test_email = "test@example.com"
+        mock_user = User(id=uuid4(), tenant_id=uuid4(), email=test_email, hashed_password="pw")
+        mock_session.execute.return_value.scalar_one_or_none.return_value = mock_user
+    
+        user = await user_repo_no_tenant.get_by_email(test_email)
+>       assert user == mock_user
+E       AssertionError: assert <coroutine object AsyncMockMixin._execute_mock_call at 0x7fc5006b9240> == <User(id='8887ddde-0878-4f64-ab97-44a5b1c1e5b7', email='test@example.com', tenant_id='4cd0c09d-19cb-4e52-919d-370eda4511fa')>
+
+app/tests/test_repositories.py:126: AssertionError
+=============================== warnings summary ===============================
+app/schemas/auth.py:4
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/auth.py:4: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AuthenticatedUser(BaseModel):
+
+app/schemas/chat.py:15
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatMessageResponse(BaseModel):
+
+app/schemas/chat.py:36
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:36: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatSessionResponse(BaseModel):
+
+app/schemas/file.py:5
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/file.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FileUploadResponse(BaseModel):
+
+app/schemas/feedback.py:16
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/feedback.py:16: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FeedbackResponse(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED app/tests/test_endpoints_chat.py::test_stream_chat_response_unauthorized_session
+FAILED app/tests/test_endpoints_feedback.py::test_submit_feedback_success - T...
+FAILED app/tests/test_endpoints_feedback.py::test_get_feedback_for_session_success
+FAILED app/tests/test_endpoints_feedback.py::test_get_feedback_for_message_success
+FAILED app/tests/test_endpoints_feedback.py::test_get_feedback_for_message_not_found
+FAILED app/tests/test_endpoints_feedback.py::test_get_feedback_for_message_unauthorized
+FAILED app/tests/test_endpoints_files.py::test_upload_file_global_rag_success
+FAILED app/tests/test_endpoints_files.py::test_upload_file_ephemeral_rag_success
+FAILED app/tests/test_endpoints_files.py::test_upload_file_no_filename - Asse...
+FAILED app/tests/test_endpoints_files.py::test_upload_file_validation_error
+FAILED app/tests/test_rag_service.py::test_rag_service_initialization - Asser...
+FAILED app/tests/test_repositories.py::test_base_repository_get_no_tenant_filter
+FAILED app/tests/test_repositories.py::test_base_repository_get_with_tenant_filter
+FAILED app/tests/test_repositories.py::test_tenant_repository_get_by_name - A...
+FAILED app/tests/test_repositories.py::test_user_repository_get_by_email_with_tenant
+FAILED app/tests/test_repositories.py::test_user_repository_get_by_email_no_tenant
+ERROR app/tests/test_rag_service.py::test_query_rag - AttributeError: 'RagSer...
+ERROR app/tests/test_rag_service.py::test_add_documents - AttributeError: 'Ra...
+ERROR app/tests/test_rag_service.py::test_stream_rag_response - AttributeErro...
+============= 16 failed, 35 passed, 5 warnings, 3 errors in 2.11s ==============
+sys:1: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited

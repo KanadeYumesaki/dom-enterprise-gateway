@@ -51,7 +51,7 @@ def rag_service(
     """RagServiceのフィクスチャ"""
     service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
     # 依存するオブジェクトがモックであることを確認
-    assert isinstance(service.vectorstore, MagicMock)
+    assert isinstance(service.global_vectorstore, MagicMock)
     assert isinstance(service.embeddings, MagicMock)
     assert isinstance(service.llm, MagicMock)
     return service

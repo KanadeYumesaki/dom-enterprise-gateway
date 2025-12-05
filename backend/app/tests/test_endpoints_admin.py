@@ -118,6 +118,7 @@ async def test_list_knowledge_documents_search(
 async def test_list_knowledge_documents_unauthorized(
     override_get_current_user_non_admin,
     override_get_knowledge_document_repository,
+    mock_knowledge_document_repository # Add missing fixture
 ):
     """
     非管理者ユーザーによるナレッジドキュメント一覧取得の失敗ケースをテストします。

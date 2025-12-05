@@ -1,0 +1,1373 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /home/masahiro/work/dom-enterprise-gateway/backend
+configfile: pyproject.toml
+plugins: langsmith-0.4.55, anyio-4.12.0, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collected 54 items
+
+app/tests/test_auth_service.py ......                                    [ 11%]
+app/tests/test_chat_service.py ...                                       [ 16%]
+app/tests/test_dom_orchestrator_service.py FFF                           [ 22%]
+app/tests/test_endpoints_admin.py ..F                                    [ 27%]
+app/tests/test_endpoints_auth.py F.FFF                                   [ 37%]
+app/tests/test_endpoints_chat.py ....FFF                                 [ 50%]
+app/tests/test_endpoints_feedback.py FFFFF                               [ 59%]
+app/tests/test_endpoints_files.py FFFF                                   [ 66%]
+app/tests/test_main.py .                                                 [ 68%]
+app/tests/test_memory_service.py .......                                 [ 81%]
+app/tests/test_rag_service.py FEEE                                       [ 88%]
+app/tests/test_repositories.py EEEEEE                                    [100%]
+
+==================================== ERRORS ====================================
+_______________________ ERROR at setup of test_query_rag _______________________
+
+mock_tenant_id = UUID('74f8ff5e-0e47-4e0b-a280-6847f70cb616')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140674547195376'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140674547193120'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140674547807488'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140674519962864'>
+
+    @pytest.fixture
+    def rag_service(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceのフィクスチャ"""
+>       service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+app/tests/test_rag_service.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+app/services/rag_service.py:29: in __init__
+    self.global_vectorstore = PGVector(
+/usr/lib/python3.12/unittest/mock.py:1132: in __call__
+    self._mock_check_sig(*args, **kwargs)
+/usr/lib/python3.12/unittest/mock.py:131: in checksig
+    sig.bind(*args, **kwargs)
+/usr/lib/python3.12/inspect.py:3242: in bind
+    return self._bind(args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Signature (embeddings: 'Embeddings', *, connection: 'Union[None, DBConnection, Engine, AsyncEngine, str]' = None, emb...t[str, Any]]' = None, use_jsonb: 'bool' = True, create_extension: 'bool' = True, async_mode: 'bool' = False) -> 'None'>
+args = ()
+kwargs = {'collection_name': 'llm_documents_74f8ff5e_0e47_4e0b_a280_6847f70cb616', 'connection_string': 'postgresql+asyncpg://u... <NonCallableMagicMock name='GoogleGenerativeAIEmbeddings()' spec='GoogleGenerativeAIEmbeddings' id='140674547810128'>}
+
+    def _bind(self, args, kwargs, *, partial=False):
+        """Private method. Don't use directly."""
+    
+        arguments = {}
+    
+        parameters = iter(self.parameters.values())
+        parameters_ex = ()
+        arg_vals = iter(args)
+    
+        while True:
+            # Let's iterate through the positional arguments and corresponding
+            # parameters
+            try:
+                arg_val = next(arg_vals)
+            except StopIteration:
+                # No more positional arguments
+                try:
+                    param = next(parameters)
+                except StopIteration:
+                    # No more parameters. That's it. Just need to check that
+                    # we have no `kwargs` after this while loop
+                    break
+                else:
+                    if param.kind == _VAR_POSITIONAL:
+                        # That's OK, just empty *args.  Let's start parsing
+                        # kwargs
+                        break
+                    elif param.name in kwargs:
+                        if param.kind == _POSITIONAL_ONLY:
+                            msg = '{arg!r} parameter is positional only, ' \
+                                  'but was passed as a keyword'
+                            msg = msg.format(arg=param.name)
+                            raise TypeError(msg) from None
+                        parameters_ex = (param,)
+                        break
+                    elif (param.kind == _VAR_KEYWORD or
+                                                param.default is not _empty):
+                        # That's fine too - we have a default value for this
+                        # parameter.  So, lets start parsing `kwargs`, starting
+                        # with the current parameter
+                        parameters_ex = (param,)
+                        break
+                    else:
+                        # No default, not VAR_KEYWORD, not VAR_POSITIONAL,
+                        # not in `kwargs`
+                        if partial:
+                            parameters_ex = (param,)
+                            break
+                        else:
+                            if param.kind == _KEYWORD_ONLY:
+                                argtype = ' keyword-only'
+                            else:
+                                argtype = ''
+                            msg = 'missing a required{argtype} argument: {arg!r}'
+                            msg = msg.format(arg=param.name, argtype=argtype)
+>                           raise TypeError(msg) from None
+E                           TypeError: missing a required argument: 'embeddings'
+
+/usr/lib/python3.12/inspect.py:3157: TypeError
+_____________________ ERROR at setup of test_add_documents _____________________
+
+mock_tenant_id = UUID('aa064574-751b-4095-a43a-3a9f1633892b')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140674549802160'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140674549799904'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140674514612400'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140674527597616'>
+
+    @pytest.fixture
+    def rag_service(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceのフィクスチャ"""
+>       service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+app/tests/test_rag_service.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+app/services/rag_service.py:29: in __init__
+    self.global_vectorstore = PGVector(
+/usr/lib/python3.12/unittest/mock.py:1132: in __call__
+    self._mock_check_sig(*args, **kwargs)
+/usr/lib/python3.12/unittest/mock.py:131: in checksig
+    sig.bind(*args, **kwargs)
+/usr/lib/python3.12/inspect.py:3242: in bind
+    return self._bind(args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Signature (embeddings: 'Embeddings', *, connection: 'Union[None, DBConnection, Engine, AsyncEngine, str]' = None, emb...t[str, Any]]' = None, use_jsonb: 'bool' = True, create_extension: 'bool' = True, async_mode: 'bool' = False) -> 'None'>
+args = ()
+kwargs = {'collection_name': 'llm_documents_aa064574_751b_4095_a43a_3a9f1633892b', 'connection_string': 'postgresql+asyncpg://u... <NonCallableMagicMock name='GoogleGenerativeAIEmbeddings()' spec='GoogleGenerativeAIEmbeddings' id='140674514615952'>}
+
+    def _bind(self, args, kwargs, *, partial=False):
+        """Private method. Don't use directly."""
+    
+        arguments = {}
+    
+        parameters = iter(self.parameters.values())
+        parameters_ex = ()
+        arg_vals = iter(args)
+    
+        while True:
+            # Let's iterate through the positional arguments and corresponding
+            # parameters
+            try:
+                arg_val = next(arg_vals)
+            except StopIteration:
+                # No more positional arguments
+                try:
+                    param = next(parameters)
+                except StopIteration:
+                    # No more parameters. That's it. Just need to check that
+                    # we have no `kwargs` after this while loop
+                    break
+                else:
+                    if param.kind == _VAR_POSITIONAL:
+                        # That's OK, just empty *args.  Let's start parsing
+                        # kwargs
+                        break
+                    elif param.name in kwargs:
+                        if param.kind == _POSITIONAL_ONLY:
+                            msg = '{arg!r} parameter is positional only, ' \
+                                  'but was passed as a keyword'
+                            msg = msg.format(arg=param.name)
+                            raise TypeError(msg) from None
+                        parameters_ex = (param,)
+                        break
+                    elif (param.kind == _VAR_KEYWORD or
+                                                param.default is not _empty):
+                        # That's fine too - we have a default value for this
+                        # parameter.  So, lets start parsing `kwargs`, starting
+                        # with the current parameter
+                        parameters_ex = (param,)
+                        break
+                    else:
+                        # No default, not VAR_KEYWORD, not VAR_POSITIONAL,
+                        # not in `kwargs`
+                        if partial:
+                            parameters_ex = (param,)
+                            break
+                        else:
+                            if param.kind == _KEYWORD_ONLY:
+                                argtype = ' keyword-only'
+                            else:
+                                argtype = ''
+                            msg = 'missing a required{argtype} argument: {arg!r}'
+                            msg = msg.format(arg=param.name, argtype=argtype)
+>                           raise TypeError(msg) from None
+E                           TypeError: missing a required argument: 'embeddings'
+
+/usr/lib/python3.12/inspect.py:3157: TypeError
+__________________ ERROR at setup of test_stream_rag_response __________________
+
+mock_tenant_id = UUID('16b5f4ff-52c1-4572-aaa4-6853c50a448b')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140674549573312'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140674549793280'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140674548334768'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140674515821552'>
+
+    @pytest.fixture
+    def rag_service(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceのフィクスチャ"""
+>       service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+app/tests/test_rag_service.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+app/services/rag_service.py:29: in __init__
+    self.global_vectorstore = PGVector(
+/usr/lib/python3.12/unittest/mock.py:1132: in __call__
+    self._mock_check_sig(*args, **kwargs)
+/usr/lib/python3.12/unittest/mock.py:131: in checksig
+    sig.bind(*args, **kwargs)
+/usr/lib/python3.12/inspect.py:3242: in bind
+    return self._bind(args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Signature (embeddings: 'Embeddings', *, connection: 'Union[None, DBConnection, Engine, AsyncEngine, str]' = None, emb...t[str, Any]]' = None, use_jsonb: 'bool' = True, create_extension: 'bool' = True, async_mode: 'bool' = False) -> 'None'>
+args = ()
+kwargs = {'collection_name': 'llm_documents_16b5f4ff_52c1_4572_aaa4_6853c50a448b', 'connection_string': 'postgresql+asyncpg://u... <NonCallableMagicMock name='GoogleGenerativeAIEmbeddings()' spec='GoogleGenerativeAIEmbeddings' id='140674548338320'>}
+
+    def _bind(self, args, kwargs, *, partial=False):
+        """Private method. Don't use directly."""
+    
+        arguments = {}
+    
+        parameters = iter(self.parameters.values())
+        parameters_ex = ()
+        arg_vals = iter(args)
+    
+        while True:
+            # Let's iterate through the positional arguments and corresponding
+            # parameters
+            try:
+                arg_val = next(arg_vals)
+            except StopIteration:
+                # No more positional arguments
+                try:
+                    param = next(parameters)
+                except StopIteration:
+                    # No more parameters. That's it. Just need to check that
+                    # we have no `kwargs` after this while loop
+                    break
+                else:
+                    if param.kind == _VAR_POSITIONAL:
+                        # That's OK, just empty *args.  Let's start parsing
+                        # kwargs
+                        break
+                    elif param.name in kwargs:
+                        if param.kind == _POSITIONAL_ONLY:
+                            msg = '{arg!r} parameter is positional only, ' \
+                                  'but was passed as a keyword'
+                            msg = msg.format(arg=param.name)
+                            raise TypeError(msg) from None
+                        parameters_ex = (param,)
+                        break
+                    elif (param.kind == _VAR_KEYWORD or
+                                                param.default is not _empty):
+                        # That's fine too - we have a default value for this
+                        # parameter.  So, lets start parsing `kwargs`, starting
+                        # with the current parameter
+                        parameters_ex = (param,)
+                        break
+                    else:
+                        # No default, not VAR_KEYWORD, not VAR_POSITIONAL,
+                        # not in `kwargs`
+                        if partial:
+                            parameters_ex = (param,)
+                            break
+                        else:
+                            if param.kind == _KEYWORD_ONLY:
+                                argtype = ' keyword-only'
+                            else:
+                                argtype = ''
+                            msg = 'missing a required{argtype} argument: {arg!r}'
+                            msg = msg.format(arg=param.name, argtype=argtype)
+>                           raise TypeError(msg) from None
+E                           TypeError: missing a required argument: 'embeddings'
+
+/usr/lib/python3.12/inspect.py:3157: TypeError
+_________ ERROR at setup of test_base_repository_get_no_tenant_filter __________
+
+    @pytest.fixture
+    def mock_session():
+        """非同期セッションのモックフィクスチャ"""
+>       return AsyncMock(spec=AsyncSession)
+                              ^^^^^^^^^^^^
+E       NameError: name 'AsyncSession' is not defined
+
+app/tests/test_repositories.py:16: NameError
+________ ERROR at setup of test_base_repository_get_with_tenant_filter _________
+
+    @pytest.fixture
+    def mock_session():
+        """非同期セッションのモックフィクスチャ"""
+>       return AsyncMock(spec=AsyncSession)
+                              ^^^^^^^^^^^^
+E       NameError: name 'AsyncSession' is not defined
+
+app/tests/test_repositories.py:16: NameError
+____ ERROR at setup of test_base_repository_create_with_tenant_auto_assign _____
+
+    @pytest.fixture
+    def mock_session():
+        """非同期セッションのモックフィクスチャ"""
+>       return AsyncMock(spec=AsyncSession)
+                              ^^^^^^^^^^^^
+E       NameError: name 'AsyncSession' is not defined
+
+app/tests/test_repositories.py:16: NameError
+_____________ ERROR at setup of test_tenant_repository_get_by_name _____________
+
+    @pytest.fixture
+    def mock_session():
+        """非同期セッションのモックフィクスチャ"""
+>       return AsyncMock(spec=AsyncSession)
+                              ^^^^^^^^^^^^
+E       NameError: name 'AsyncSession' is not defined
+
+app/tests/test_repositories.py:16: NameError
+_______ ERROR at setup of test_user_repository_get_by_email_with_tenant ________
+
+    @pytest.fixture
+    def mock_session():
+        """非同期セッションのモックフィクスチャ"""
+>       return AsyncMock(spec=AsyncSession)
+                              ^^^^^^^^^^^^
+E       NameError: name 'AsyncSession' is not defined
+
+app/tests/test_repositories.py:16: NameError
+________ ERROR at setup of test_user_repository_get_by_email_no_tenant _________
+
+    @pytest.fixture
+    def mock_session():
+        """非同期セッションのモックフィクスチャ"""
+>       return AsyncMock(spec=AsyncSession)
+                              ^^^^^^^^^^^^
+E       NameError: name 'AsyncSession' is not defined
+
+app/tests/test_repositories.py:16: NameError
+=================================== FAILURES ===================================
+________________ test_process_chat_message_ic5_light_streaming _________________
+
+dom_orchestrator_service = <app.services.dom_orchestrator.DomOrchestratorService object at 0x7ff158a9ad80>
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140674551361136'>
+mock_answer_composer_service = <AsyncMock spec='AnswerComposerService' id='140674551364736'>
+mock_rag_service = <AsyncMock spec='RagService' id='140674551365600'>
+
+    @pytest.mark.asyncio
+    async def test_process_chat_message_ic5_light_streaming(
+        dom_orchestrator_service,
+        mock_llm_client,
+        mock_answer_composer_service,
+        mock_rag_service # New fixture
+    ):
+        """
+        DomOrchestratorServiceがLLM応答をIC-5ライト形式に整形してストリーミングするテスト。
+        (Research Mode OFF)
+        """
+        test_prompt = "Test prompt for IC-5"
+        test_session_id = str(uuid4()) # strに変換
+        raw_llm_output_mock = "Decision: Test Decision. Why: Test Why. Next 3 Actions: Test Action 1, Test Action 2, Test Action 3."
+    
+        # Mock LLM Client to stream tokens
+        async def mock_llm_stream():
+            for token in raw_llm_output_mock.split(" "):
+                yield token + " "
+            yield "[END]"
+        mock_llm_client.stream_chat_response.return_value = mock_llm_stream()
+    
+        # Mock AnswerComposerService to return formatted dictionary
+        mock_answer_composer_service.compose_ic5_light_response.return_value = {
+            "Decision": "Test Decision.",
+            "Why": "Test Why.",
+            "Next 3 Actions": "Test Action 1, Test Action 2, Test Action 3."
+        }
+    
+        # ストリーミング応答の収集
+        streamed_output = ""
+        async for chunk in dom_orchestrator_service.process_chat_message(test_prompt, test_session_id, is_research_mode=False):
+            streamed_output += chunk
+    
+        # 検証
+>       mock_llm_client.stream_chat_response.assert_awaited_once_with(test_prompt) # RAGなしなので元のプロンプト
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+app/tests/test_dom_orchestrator_service.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <MagicMock name='mock.stream_chat_response' id='140674551364688'>
+name = 'assert_awaited_once_with'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+            raise AttributeError(name)
+        if not self._mock_unsafe and (not self._mock_methods or name not in self._mock_methods):
+            if name.startswith(('assert', 'assret', 'asert', 'aseert', 'assrt')) or name in _ATTRIB_DENY_LIST:
+>               raise AttributeError(
+                    f"{name!r} is not a valid assertion. Use a spec "
+                    f"for the mock if {name!r} is meant to be an attribute.")
+E               AttributeError: 'assert_awaited_once_with' is not a valid assertion. Use a spec for the mock if 'assert_awaited_once_with' is meant to be an attribute.. Did you mean: 'assert_called_once_with'?
+
+/usr/lib/python3.12/unittest/mock.py:663: AttributeError
+_________ test_process_chat_message_research_mode_on_with_rag_context __________
+
+dom_orchestrator_service = <app.services.dom_orchestrator.DomOrchestratorService object at 0x7ff158a98530>
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140674551350432'>
+mock_answer_composer_service = <AsyncMock spec='AnswerComposerService' id='140674551351632'>
+mock_rag_service = <AsyncMock spec='RagService' id='140674551350288'>
+
+    @pytest.mark.asyncio
+    async def test_process_chat_message_research_mode_on_with_rag_context(
+        dom_orchestrator_service,
+        mock_llm_client,
+        mock_answer_composer_service,
+        mock_rag_service
+    ):
+        """
+        Research Mode ONでRAGコンテキストが取得できる場合のテスト。
+        """
+        test_prompt = "RAG Test Question"
+        test_session_id = str(uuid4())
+        rag_context_mock = "RAG retrieved: Some relevant document content."
+        llm_output_with_rag = "Decision: Answer based on RAG. Why: Explained by RAG. Next 3 Actions: Check RAG, Verify RAG, Use RAG."
+    
+        mock_rag_service.query_rag.return_value = rag_context_mock
+        async def mock_llm_stream():
+            for token in llm_output_with_rag.split(" "):
+                yield token + " "
+            yield "[END]"
+        mock_llm_client.stream_chat_response.return_value = mock_llm_stream()
+        mock_answer_composer_service.compose_ic5_light_response.return_value = {
+            "Decision": "Answer based on RAG.",
+            "Why": "Explained by RAG.",
+            "Next 3 Actions": "Check RAG, Verify RAG, Use RAG."
+        }
+    
+        streamed_output = ""
+>       async for chunk in dom_orchestrator_service.process_chat_message(test_prompt, test_session_id, is_research_mode=True):
+
+app/tests/test_dom_orchestrator_service.py:107: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.services.dom_orchestrator.DomOrchestratorService object at 0x7ff158a98530>
+user_message = 'RAG Test Question'
+session_id = '51c804e5-fdd2-43e1-9d9b-389f59328e05', is_research_mode = True
+
+    async def process_chat_message(self, user_message: str, session_id: str, is_research_mode: bool = False) -> AsyncGenerator[str, None]:
+        """
+        ユーザーからのチャットメッセージを処理し、アシスタントの応答をIC-5ライト形式に整形して
+        トークンごとにストリーミングします。
+        is_research_modeがTrueの場合、RAGサービスを呼び出してコンテキストを強化します。
+        """
+        augmented_prompt = user_message
+    
+        if is_research_mode:
+            # RAGサービスを呼び出して関連情報を取得
+>           retrieved_context = await self.rag_service.query_rag(user_message, session_id=UUID(session_id))
+                                                                                          ^^^^
+E           NameError: name 'UUID' is not defined
+
+app/services/dom_orchestrator.py:30: NameError
+__________ test_process_chat_message_research_mode_on_no_rag_context ___________
+
+dom_orchestrator_service = <app.services.dom_orchestrator.DomOrchestratorService object at 0x7ff158a91070>
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140674551326640'>
+mock_answer_composer_service = <AsyncMock spec='AnswerComposerService' id='140674551321072'>
+mock_rag_service = <AsyncMock spec='RagService' id='140674551321648'>
+
+    @pytest.mark.asyncio
+    async def test_process_chat_message_research_mode_on_no_rag_context(
+        dom_orchestrator_service,
+        mock_llm_client,
+        mock_answer_composer_service,
+        mock_rag_service
+    ):
+        """
+        Research Mode ONだがRAGコンテキストが取得できない場合のテスト。
+        """
+        test_prompt = "No RAG context question"
+        test_session_id = str(uuid4())
+        llm_output_no_rag = "Decision: Answer without RAG. Why: No RAG data. Next 3 Actions: None."
+    
+        mock_rag_service.query_rag.return_value = "分かりません" # またはNone
+        async def mock_llm_stream():
+            for token in llm_output_no_rag.split(" "):
+                yield token + " "
+            yield "[END]"
+        mock_llm_client.stream_chat_response.return_value = mock_llm_stream()
+        mock_answer_composer_service.compose_ic5_light_response.return_value = {
+            "Decision": "Answer without RAG.",
+            "Why": "No RAG data.",
+            "Next 3 Actions": "None."
+        }
+    
+        streamed_output = ""
+>       async for chunk in dom_orchestrator_service.process_chat_message(test_prompt, test_session_id, is_research_mode=True):
+
+app/tests/test_dom_orchestrator_service.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.services.dom_orchestrator.DomOrchestratorService object at 0x7ff158a91070>
+user_message = 'No RAG context question'
+session_id = 'a14e6ac8-cffb-4aeb-8f2e-70c36e30c9ed', is_research_mode = True
+
+    async def process_chat_message(self, user_message: str, session_id: str, is_research_mode: bool = False) -> AsyncGenerator[str, None]:
+        """
+        ユーザーからのチャットメッセージを処理し、アシスタントの応答をIC-5ライト形式に整形して
+        トークンごとにストリーミングします。
+        is_research_modeがTrueの場合、RAGサービスを呼び出してコンテキストを強化します。
+        """
+        augmented_prompt = user_message
+    
+        if is_research_mode:
+            # RAGサービスを呼び出して関連情報を取得
+>           retrieved_context = await self.rag_service.query_rag(user_message, session_id=UUID(session_id))
+                                                                                          ^^^^
+E           NameError: name 'UUID' is not defined
+
+app/services/dom_orchestrator.py:30: NameError
+__________________ test_list_knowledge_documents_unauthorized __________________
+
+override_get_current_user_non_admin = None
+override_get_knowledge_document_repository = None
+
+    @pytest.mark.asyncio
+    async def test_list_knowledge_documents_unauthorized(
+        override_get_current_user_non_admin,
+        override_get_knowledge_document_repository,
+    ):
+        """
+        非管理者ユーザーによるナレッジドキュメント一覧取得の失敗ケースをテストします。
+        """
+        response = client.get("/api/v1/admin/knowledge")
+        assert response.status_code == 403
+        assert "Not enough privileges" in response.json()["detail"]
+>       mock_knowledge_document_repository.search.assert_not_awaited() # searchは呼ばれない
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'FixtureFunctionDefinition' object has no attribute 'search'
+
+app/tests/test_endpoints_admin.py:128: AttributeError
+________________________ test_read_current_user_success ________________________
+
+override_get_current_user = None
+mock_authenticated_user = AuthenticatedUser(id=UUID('fd1ec8e7-5231-4498-9555-7e92abd59341'), tenant_id=UUID('de3fe774-25c2-43c8-b780-ae40a78645b8'), email='test@example.com', is_active=True, is_admin=False)
+
+    def test_read_current_user_success(override_get_current_user, mock_authenticated_user):
+        """
+        認証済みユーザー情報取得APIの成功ケースをテストします。
+        """
+        response = client.get("/api/v1/auth/me")
+        assert response.status_code == 200
+        assert response.json()["email"] == mock_authenticated_user.email
+>       assert uuid4(response.json()["id"]) == mock_authenticated_user.id
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: uuid4() takes 0 positional arguments but 1 was given
+
+app/tests/test_endpoints_auth.py:50: TypeError
+_____________________ test_read_current_user_inactive_user _____________________
+
+mock_auth_service = <AsyncMock spec='AuthService' id='140674551105776'>
+override_get_auth_service = None
+
+    def test_read_current_user_inactive_user(mock_auth_service, override_get_auth_service):
+        """
+        非アクティブユーザーの認証失敗ケースをテストします。
+        """
+        inactive_user = AuthenticatedUser(
+            id=uuid4(),
+            tenant_id=uuid4(),
+            email="inactive@example.com",
+            is_active=False,
+            is_admin=False
+        )
+        mock_auth_service.verify_id_token.return_value = inactive_user
+    
+        response = client.get("/api/v1/auth/me", headers={"Authorization": "Bearer valid_token"})
+>       assert response.status_code == 400
+E       assert 401 == 400
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+app/tests/test_endpoints_auth.py:79: AssertionError
+_____________________ test_get_current_admin_user_success ______________________
+
+    @pytest.mark.asyncio
+    async def test_get_current_admin_user_success():
+        """
+        admin権限を持つユーザーのテスト。
+        """
+        admin_user = AuthenticatedUser(
+            id=uuid4(),
+            tenant_id=uuid4(),
+            email="admin@example.com",
+            is_active=True,
+            is_admin=True
+        )
+>       result = await get_current_user.__wrapped__.__wrapped__(token="dummy", auth_service=MagicMock(verify_id_token=AsyncMock(return_value=admin_user)))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'function' object has no attribute '__wrapped__'
+
+app/tests/test_endpoints_auth.py:96: AttributeError
+____________________ test_get_current_admin_user_forbidden _____________________
+
+    @pytest.mark.asyncio
+    async def test_get_current_admin_user_forbidden():
+        """
+        admin権限を持たないユーザーのテスト。
+        """
+        non_admin_user = AuthenticatedUser(
+            id=uuid4(),
+            tenant_id=uuid4(),
+            email="user@example.com",
+            is_active=True,
+            is_admin=False
+        )
+>       with pytest.raises(HTTPException) as exc_info:
+                           ^^^^^^^^^^^^^
+E       NameError: name 'HTTPException' is not defined
+
+app/tests/test_endpoints_auth.py:116: NameError
+______________________ test_stream_chat_response_success _______________________
+
+override_get_current_user = None, override_get_chat_session_repository = None
+override_get_chat_message_repository = None
+override_get_dom_orchestrator_service = None
+mock_current_user = AuthenticatedUser(id=UUID('f5cd11ec-d32d-487b-9b60-185a7631365c'), tenant_id=UUID('a8d68d4f-d260-4209-8926-7d3f44ecdec6'), email='test@example.com', is_active=True, is_admin=False)
+mock_chat_session_repo = <AsyncMock spec='ChatSessionRepository' id='140674551107024'>
+mock_chat_message_repo = <AsyncMock spec='ChatMessageRepository' id='140674551112016'>
+mock_dom_orchestrator_service = <AsyncMock spec='DomOrchestratorService' id='140674551110768'>
+
+    @pytest.mark.asyncio
+    async def test_stream_chat_response_success(
+        override_get_current_user,
+        override_get_chat_session_repository,
+        override_get_chat_message_repository,
+        override_get_dom_orchestrator_service,
+        mock_current_user,
+        mock_chat_session_repo,
+        mock_chat_message_repo,
+        mock_dom_orchestrator_service
+    ):
+        """
+        チャット応答ストリーミングAPIの成功ケースをテストします (research_mode=False)。
+        """
+        session_id = uuid4()
+        # Mock for existing session check
+        mock_chat_session_repo.get.return_value = ChatSessionResponse(
+            id=session_id, user_id=mock_current_user.id, tenant_id=mock_current_user.tenant_id, title="Existing Session", is_active=True, created_at=datetime.now(), updated_at=datetime.now()
+        )
+        # Mock for last user message
+        mock_chat_message_repo.get_by_session_id.return_value = [
+            ChatMessageResponse(id=uuid4(), session_id=session_id, role="user", content="Test prompt", created_at=datetime.now(), updated_at=datetime.now())
+        ]
+    
+        # Mock for DomOrchestratorService streaming response (IC-5 light format)
+        async def mock_orchestrator_stream():
+            yield "**Decision**\nTest Decision.\n\n"
+            yield "**Why**\nTest Why.\n\n"
+            yield "**Next 3 Actions**\nTest Action 1, Test Action 2, Test Action 3.\n\n"
+        mock_dom_orchestrator_service.process_chat_message.return_value = mock_orchestrator_stream()
+    
+        # Mock for assistant message saving
+        mock_chat_message_repo.create.return_value = ChatMessageResponse(
+            id=uuid4(), session_id=session_id, role="assistant", content="Formatted response", created_at=datetime.now(), updated_at=datetime.now()
+        )
+    
+        response = client.get(f"/api/v1/chat/stream/{session_id}?research_mode=false") # research_mode=falseを明示的に渡す
+        assert response.status_code == 200
+>       assert response.headers["content-type"] == "text/event-stream"
+E       AssertionError: assert 'text/event-s...charset=utf-8' == 'text/event-stream'
+E         
+E         - text/event-stream
+E         + text/event-stream; charset=utf-8
+
+app/tests/test_endpoints_chat.py:215: AssertionError
+__________________ test_stream_chat_response_research_mode_on __________________
+
+override_get_current_user = None, override_get_chat_session_repository = None
+override_get_chat_message_repository = None
+override_get_dom_orchestrator_service = None
+mock_current_user = AuthenticatedUser(id=UUID('7f9f8ee1-e0fb-427d-b779-ea430715fd42'), tenant_id=UUID('a4017a57-c281-4708-8dbe-f69d4db30c9f'), email='test@example.com', is_active=True, is_admin=False)
+mock_chat_session_repo = <AsyncMock spec='ChatSessionRepository' id='140674551203408'>
+mock_chat_message_repo = <AsyncMock spec='ChatMessageRepository' id='140674551208400'>
+mock_dom_orchestrator_service = <AsyncMock spec='DomOrchestratorService' id='140674551203552'>
+
+    @pytest.mark.asyncio
+    async def test_stream_chat_response_research_mode_on(
+        override_get_current_user,
+        override_get_chat_session_repository,
+        override_get_chat_message_repository,
+        override_get_dom_orchestrator_service,
+        mock_current_user,
+        mock_chat_session_repo,
+        mock_chat_message_repo,
+        mock_dom_orchestrator_service
+    ):
+        """
+        チャット応答ストリーミングAPIの成功ケースをテストします (research_mode=True)。
+        """
+        session_id = uuid4()
+        # Mock for existing session check
+        mock_chat_session_repo.get.return_value = ChatSessionResponse(
+            id=session_id, user_id=mock_current_user.id, tenant_id=mock_current_user.tenant_id, title="Existing Session", is_active=True, created_at=datetime.now(), updated_at=datetime.now()
+        )
+        # Mock for last user message
+        mock_chat_message_repo.get_by_session_id.return_value = [
+            ChatMessageResponse(id=uuid4(), session_id=session_id, role="user", content="Research prompt", created_at=datetime.now(), updated_at=datetime.now())
+        ]
+    
+        # Mock for DomOrchestratorService streaming response (IC-5 light format)
+        async def mock_orchestrator_stream():
+            yield "**Decision**\nResearch Decision.\n\n"
+            yield "**Why**\nResearch Why.\n\n"
+            yield "**Next 3 Actions**\nResearch Action 1, Research Action 2, Research Action 3.\n\n"
+        mock_dom_orchestrator_service.process_chat_message.return_value = mock_orchestrator_stream()
+    
+        # Mock for assistant message saving
+        mock_chat_message_repo.create.return_value = ChatMessageResponse(
+            id=uuid4(), session_id=session_id, role="assistant", content="Formatted research response", created_at=datetime.now(), updated_at=datetime.now()
+        )
+    
+        response = client.get(f"/api/v1/chat/stream/{session_id}?research_mode=true") # research_mode=trueを渡す
+        assert response.status_code == 200
+>       assert response.headers["content-type"] == "text/event-stream"
+E       AssertionError: assert 'text/event-s...charset=utf-8' == 'text/event-stream'
+E         
+E         - text/event-stream
+E         + text/event-stream; charset=utf-8
+
+app/tests/test_endpoints_chat.py:278: AssertionError
+________________ test_stream_chat_response_unauthorized_session ________________
+
+override_get_current_user = None, override_get_chat_session_repository = None
+mock_current_user = AuthenticatedUser(id=UUID('29c39f6f-9832-4c69-8a88-d508847abfe3'), tenant_id=UUID('9e8ed71a-97bd-4dd8-805d-8dbf4bba121c'), email='test@example.com', is_active=True, is_admin=False)
+mock_chat_session_repo = <AsyncMock spec='ChatSessionRepository' id='140674551320544'>
+
+    @pytest.mark.asyncio
+    async def test_stream_chat_response_unauthorized_session(
+        override_get_current_user,
+        override_get_chat_session_repository,
+        mock_current_user,
+        mock_chat_session_repo
+    ):
+        """
+        チャット応答ストリーミングAPIのセッション権限なしケースをテストします。
+        """
+        session_id = uuid4()
+        # Mock for existing session check (user_id mismatch)
+        mock_chat_session_repo.get.return_value = ChatSessionResponse(
+            id=session_id, user_id=uuid4(), tenant_id=mock_current_user.tenant_id, title="Other User's Session", is_active=True, created_at=datetime.now(), updated_at=datetime.now()
+        )
+    
+>       response = client.get(f"/api/v1/chat/stream/{session_id}")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+app/tests/test_endpoints_chat.py:319: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:465: in get
+    return super().get(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1066: in get
+    return self.request(
+.venv/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:340: in handle_request
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/testclient.py:337: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:326: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:257: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:112: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:714: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:734: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:291: in app
+    solved_result = await solve_dependencies(
+.venv/lib/python3.12/site-packages/fastapi/dependencies/utils.py:615: in solve_dependencies
+    solved_result = await solve_dependencies(
+.venv/lib/python3.12/site-packages/fastapi/dependencies/utils.py:640: in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/concurrency.py:37: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/to_thread.py:61: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2525: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:986: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def get_answer_composer_service() -> AnswerComposerService:
+        """
+        AnswerComposerServiceの依存性注入を提供します。
+        """
+>       return AnswerComposerService()
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: AnswerComposerService.__init__() takes 0 positional arguments but 1 was given
+
+app/dependencies.py:164: TypeError
+_________________________ test_submit_feedback_success _________________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_current_user = AuthenticatedUser(id=UUID('452e7650-218d-416a-bb3e-0a8d57210dcc'), tenant_id=UUID('17e01a03-ad19-4f06-a2fe-7d94e9511bcc'), email='test@example.com', is_active=True, is_admin=False)
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140674551239776'>
+
+    @pytest.mark.asyncio
+    async def test_submit_feedback_success(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_current_user,
+        mock_feedback_service
+    ):
+        """
+        フィードバック送信APIの成功ケースをテストします。
+        """
+        feedback_id = uuid4()
+        session_id = uuid4()
+        message_id = uuid4()
+        feedback_data = FeedbackCreate(
+            session_id=session_id,
+            message_id=message_id,
+            rating=1,
+            comment="Great response!"
+        )
+        mock_feedback_service.create_feedback.return_value = FeedbackResponse(
+            id=feedback_id,
+            tenant_id=mock_current_user.tenant_id,
+            user_id=mock_current_user.id,
+            session_id=session_id,
+            message_id=message_id,
+            rating=feedback_data.rating,
+            comment=feedback_data.comment,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
+        )
+    
+>       response = client.post("/api/v1/feedback", json=feedback_data.model_dump())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+app/tests/test_endpoints_feedback.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:538: in post
+    return super().post(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:824: in request
+    request = self.build_request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:358: in build_request
+    return Request(
+.venv/lib/python3.12/site-packages/httpx/_models.py:342: in __init__
+    headers, stream = encode_request(
+.venv/lib/python3.12/site-packages/httpx/_content.py:214: in encode_request
+    return encode_json(json)
+           ^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_content.py:177: in encode_json
+    body = json_dumps(json).encode("utf-8")
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/__init__.py:231: in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/encoder.py:200: in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/encoder.py:258: in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.encoder.JSONEncoder object at 0x7ff1a1a565d0>
+o = UUID('d49ce372-2abb-48c5-90cc-e5c5e0a4ea72')
+
+    def default(self, o):
+        """Implement this method in a subclass such that it returns
+        a serializable object for ``o``, or calls the base implementation
+        (to raise a ``TypeError``).
+    
+        For example, to support arbitrary iterators, you could
+        implement default like this::
+    
+            def default(self, o):
+                try:
+                    iterable = iter(o)
+                except TypeError:
+                    pass
+                else:
+                    return list(iterable)
+                # Let the base class default method raise the TypeError
+                return super().default(o)
+    
+        """
+>       raise TypeError(f'Object of type {o.__class__.__name__} '
+                        f'is not JSON serializable')
+E       TypeError: Object of type UUID is not JSON serializable
+
+/usr/lib/python3.12/json/encoder.py:180: TypeError
+____________________ test_get_feedback_for_session_success _____________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_current_user = AuthenticatedUser(id=UUID('f4fc325f-4c5d-4ddb-a225-93c4450e5f7a'), tenant_id=UUID('3921813c-264a-4a38-9e6e-36da7fa604bf'), email='test@example.com', is_active=True, is_admin=False)
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140674551213056'>
+
+    @pytest.mark.asyncio
+    async def test_get_feedback_for_session_success(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_current_user,
+        mock_feedback_service
+    ):
+        """
+        セッションIDによるフィードバック取得の成功ケースをテストします。
+        """
+        session_id = uuid4()
+        feedback_1 = FeedbackResponse(
+            id=uuid4(), tenant_id=mock_current_user.tenant_id, user_id=mock_current_user.id, session_id=session_id,
+            rating=1, comment="Good", created_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc)
+        )
+        feedback_2 = FeedbackResponse(
+            id=uuid4(), tenant_id=mock_current_user.tenant_id, user_id=mock_current_user.id, session_id=session_id,
+            rating=-1, comment="Bad", created_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc)
+        )
+        mock_feedback_service.get_feedback_by_session_id.return_value = [feedback_1, feedback_2]
+    
+        response = client.get(f"/api/v1/feedback/{session_id}")
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+app/tests/test_endpoints_feedback.py:108: AssertionError
+____________________ test_get_feedback_for_message_success _____________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_current_user = AuthenticatedUser(id=UUID('f0282f6e-dc9a-4b10-98e9-bfc05483ff77'), tenant_id=UUID('c7415eb8-845f-49c7-90dd-23f85774ac0e'), email='test@example.com', is_active=True, is_admin=False)
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140674551133968'>
+
+    @pytest.mark.asyncio
+    async def test_get_feedback_for_message_success(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_current_user,
+        mock_feedback_service
+    ):
+        """
+        メッセージIDによるフィードバック取得の成功ケースをテストします。
+        """
+        message_id = uuid4()
+        feedback = FeedbackResponse(
+            id=uuid4(), tenant_id=mock_current_user.tenant_id, user_id=mock_current_user.id, session_id=uuid4(),
+            message_id=message_id, rating=1, comment="Very helpful", created_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc)
+        )
+        mock_feedback_service.get_feedback_by_message_id.return_value = feedback
+    
+        response = client.get(f"/api/v1/feedback/message/{message_id}")
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+app/tests/test_endpoints_feedback.py:131: AssertionError
+___________________ test_get_feedback_for_message_not_found ____________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140674551110816'>
+
+    @pytest.mark.asyncio
+    async def test_get_feedback_for_message_not_found(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_feedback_service
+    ):
+        """
+        メッセージIDによるフィードバックが見つからない場合のテスト。
+        """
+        message_id = uuid4()
+        mock_feedback_service.get_feedback_by_message_id.return_value = None
+    
+        response = client.get(f"/api/v1/feedback/message/{message_id}")
+>       assert response.status_code == 200 # Optional[FeedbackResponse]なのでNoneを返す場合は200
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+app/tests/test_endpoints_feedback.py:148: AssertionError
+__________________ test_get_feedback_for_message_unauthorized __________________
+
+override_get_current_user = None, override_get_feedback_service = None
+mock_feedback_service = <AsyncMock spec='FeedbackService' id='140674551076416'>
+
+    @pytest.mark.asyncio
+    async def test_get_feedback_for_message_unauthorized(
+        override_get_current_user,
+        override_get_feedback_service,
+        mock_feedback_service
+    ):
+        """
+        メッセージIDによるフィードバック取得で権限がない場合のテスト。
+        """
+        message_id = uuid4()
+        # 別のテナントのフィードバックを返すようにモック
+        unauthorized_feedback = FeedbackResponse(
+            id=uuid4(), tenant_id=uuid4(), user_id=uuid4(), session_id=uuid4(),
+            message_id=message_id, rating=1, comment="Not yours", created_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc)
+        )
+        mock_feedback_service.get_feedback_by_message_id.return_value = unauthorized_feedback
+    
+        response = client.get(f"/api/v1/feedback/message/{message_id}")
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+app/tests/test_endpoints_feedback.py:170: AssertionError
+_____________________ test_upload_file_global_rag_success ______________________
+
+override_get_current_user = None, override_get_file_service = None
+override_get_knowledge_document_repository = None
+override_get_rag_service = None
+mock_current_user = AuthenticatedUser(id=UUID('a4cf4883-9a0d-4843-a2b8-43f5b9515f34'), tenant_id=UUID('b49027cc-0bbd-4557-8722-61837a47604a'), email='test@example.com', is_active=True, is_admin=False)
+mock_file_service = <AsyncMock spec='FileService' id='140674551043840'>
+mock_knowledge_document_repository = <AsyncMock spec='KnowledgeDocumentRepository' id='140674551039712'>
+mock_rag_service = <AsyncMock spec='RagService' id='140674551052960'>
+
+    @pytest.mark.asyncio
+    async def test_upload_file_global_rag_success(
+        override_get_current_user,
+        override_get_file_service,
+        override_get_knowledge_document_repository,
+        override_get_rag_service,
+        mock_current_user,
+        mock_file_service,
+        mock_knowledge_document_repository,
+        mock_rag_service
+    ):
+        """
+        ファイルをアップロードし、グローバルRAGに登録する成功ケースをテストします。
+        """
+        file_content = b"This is a test document."
+        mock_file = BytesIO(file_content)
+        file_name = "test.txt"
+        file_id = uuid4()
+    
+>       mock_file_service.save_file.return_value = MagicMock(
+                                                   ^^^^^^^^^
+            id=file_id,
+            tenant_id=mock_current_user.tenant_id,
+            file_name=file_name,
+            file_path="/path/to/test.txt",
+            file_type="text/plain",
+            file_size=str(len(file_content)),
+            uploaded_by_user_id=mock_current_user.id,
+            is_active=True
+        )
+E       NameError: name 'MagicMock' is not defined
+
+app/tests/test_endpoints_files.py:86: NameError
+____________________ test_upload_file_ephemeral_rag_success ____________________
+
+override_get_current_user = None, override_get_file_service = None
+override_get_knowledge_document_repository = None
+override_get_rag_service = None
+mock_current_user = AuthenticatedUser(id=UUID('02e1e0d9-23d9-40df-ba54-9805b21d36ce'), tenant_id=UUID('b314d0e4-3bf4-4de9-a10c-566ac80fc36c'), email='test@example.com', is_active=True, is_admin=False)
+mock_file_service = <AsyncMock spec='FileService' id='140674551047824'>
+mock_knowledge_document_repository = <AsyncMock spec='KnowledgeDocumentRepository' id='140674551051280'>
+mock_rag_service = <AsyncMock spec='RagService' id='140674551050656'>
+
+    @pytest.mark.asyncio
+    async def test_upload_file_ephemeral_rag_success(
+        override_get_current_user,
+        override_get_file_service,
+        override_get_knowledge_document_repository,
+        override_get_rag_service,
+        mock_current_user,
+        mock_file_service,
+        mock_knowledge_document_repository,
+        mock_rag_service
+    ):
+        """
+        ファイルをアップロードし、Ephemeral RAGに登録する成功ケースをテストします。
+        """
+        file_content = b"This is a session-specific document."
+        mock_file = BytesIO(file_content)
+        file_name = "session_doc.md"
+        file_id = uuid4()
+        session_id = uuid4()
+    
+>       mock_file_service.save_file.return_value = MagicMock(
+                                                   ^^^^^^^^^
+            id=file_id,
+            tenant_id=mock_current_user.tenant_id,
+            file_name=file_name,
+            file_path="/path/to/session_doc.md",
+            file_type="text/markdown",
+            file_size=str(len(file_content)),
+            uploaded_by_user_id=mock_current_user.id,
+            is_active=True
+        )
+E       NameError: name 'MagicMock' is not defined
+
+app/tests/test_endpoints_files.py:144: NameError
+_________________________ test_upload_file_no_filename _________________________
+
+override_get_current_user = None, override_get_file_service = None
+
+    @pytest.mark.asyncio
+    async def test_upload_file_no_filename(
+        override_get_current_user,
+        override_get_file_service,
+    ):
+        """
+        ファイル名がない場合のアップロード失敗ケースをテストします。
+        """
+        response = client.post(
+            "/api/v1/files/upload",
+            files={"file": (None, BytesIO(b"content"), "text/plain")}
+        )
+        assert response.status_code == 400
+>       assert "No file name provided." in response.json()["detail"]
+E       AssertionError: assert 'No file name provided.' in 'There was an error parsing the body'
+
+app/tests/test_endpoints_files.py:197: AssertionError
+______________________ test_upload_file_validation_error _______________________
+
+override_get_current_user = None, override_get_file_service = None
+
+    @pytest.mark.asyncio
+    async def test_upload_file_validation_error(
+        override_get_current_user,
+        override_get_file_service,
+    ):
+        """
+        ファイルバリデーションエラー時のアップロード失敗ケースをテストします。
+        """
+>       mock_file_service.save_file.side_effect = HTTPException(
+                                                  ^^^^^^^^^^^^^
+            status_code=413, detail="File size exceeds the limit."
+        )
+E       NameError: name 'HTTPException' is not defined
+
+app/tests/test_endpoints_files.py:208: NameError
+_______________________ test_rag_service_initialization ________________________
+
+mock_tenant_id = UUID('96b910b6-2f6d-49de-b8b4-9db87d7ba55d')
+mock_llm_client = <AsyncMock spec='MockLLMClient' id='140674551318768'>
+mock_pgvector = <MagicMock name='PGVector' spec='PGVector' id='140674551323568'>
+mock_embeddings = <MagicMock name='GoogleGenerativeAIEmbeddings' spec='GoogleGenerativeAIEmbeddings' id='140674529027584'>
+mock_chat_google_generative_ai = <MagicMock name='ChatGoogleGenerativeAI' spec='ChatGoogleGenerativeAI' id='140674523892192'>
+
+    @pytest.mark.asyncio
+    async def test_rag_service_initialization(
+        mock_tenant_id,
+        mock_llm_client,
+        mock_pgvector,
+        mock_embeddings,
+        mock_chat_google_generative_ai
+    ):
+        """RagServiceが正しく初期化されることをテスト"""
+>       service = RagService(tenant_id=mock_tenant_id, llm_client=mock_llm_client)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+app/tests/test_rag_service.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+app/services/rag_service.py:29: in __init__
+    self.global_vectorstore = PGVector(
+/usr/lib/python3.12/unittest/mock.py:1132: in __call__
+    self._mock_check_sig(*args, **kwargs)
+/usr/lib/python3.12/unittest/mock.py:131: in checksig
+    sig.bind(*args, **kwargs)
+/usr/lib/python3.12/inspect.py:3242: in bind
+    return self._bind(args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Signature (embeddings: 'Embeddings', *, connection: 'Union[None, DBConnection, Engine, AsyncEngine, str]' = None, emb...t[str, Any]]' = None, use_jsonb: 'bool' = True, create_extension: 'bool' = True, async_mode: 'bool' = False) -> 'None'>
+args = ()
+kwargs = {'collection_name': 'llm_documents_96b910b6_2f6d_49de_b8b4_9db87d7ba55d', 'connection_string': 'postgresql+asyncpg://u... <NonCallableMagicMock name='GoogleGenerativeAIEmbeddings()' spec='GoogleGenerativeAIEmbeddings' id='140674529031136'>}
+
+    def _bind(self, args, kwargs, *, partial=False):
+        """Private method. Don't use directly."""
+    
+        arguments = {}
+    
+        parameters = iter(self.parameters.values())
+        parameters_ex = ()
+        arg_vals = iter(args)
+    
+        while True:
+            # Let's iterate through the positional arguments and corresponding
+            # parameters
+            try:
+                arg_val = next(arg_vals)
+            except StopIteration:
+                # No more positional arguments
+                try:
+                    param = next(parameters)
+                except StopIteration:
+                    # No more parameters. That's it. Just need to check that
+                    # we have no `kwargs` after this while loop
+                    break
+                else:
+                    if param.kind == _VAR_POSITIONAL:
+                        # That's OK, just empty *args.  Let's start parsing
+                        # kwargs
+                        break
+                    elif param.name in kwargs:
+                        if param.kind == _POSITIONAL_ONLY:
+                            msg = '{arg!r} parameter is positional only, ' \
+                                  'but was passed as a keyword'
+                            msg = msg.format(arg=param.name)
+                            raise TypeError(msg) from None
+                        parameters_ex = (param,)
+                        break
+                    elif (param.kind == _VAR_KEYWORD or
+                                                param.default is not _empty):
+                        # That's fine too - we have a default value for this
+                        # parameter.  So, lets start parsing `kwargs`, starting
+                        # with the current parameter
+                        parameters_ex = (param,)
+                        break
+                    else:
+                        # No default, not VAR_KEYWORD, not VAR_POSITIONAL,
+                        # not in `kwargs`
+                        if partial:
+                            parameters_ex = (param,)
+                            break
+                        else:
+                            if param.kind == _KEYWORD_ONLY:
+                                argtype = ' keyword-only'
+                            else:
+                                argtype = ''
+                            msg = 'missing a required{argtype} argument: {arg!r}'
+                            msg = msg.format(arg=param.name, argtype=argtype)
+>                           raise TypeError(msg) from None
+E                           TypeError: missing a required argument: 'embeddings'
+
+/usr/lib/python3.12/inspect.py:3157: TypeError
+=============================== warnings summary ===============================
+app/schemas/auth.py:4
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/auth.py:4: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AuthenticatedUser(BaseModel):
+
+app/schemas/chat.py:15
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatMessageResponse(BaseModel):
+
+app/schemas/chat.py:36
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/chat.py:36: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ChatSessionResponse(BaseModel):
+
+app/schemas/file.py:5
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/file.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FileUploadResponse(BaseModel):
+
+app/schemas/feedback.py:16
+  /home/masahiro/work/dom-enterprise-gateway/backend/app/schemas/feedback.py:16: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FeedbackResponse(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED app/tests/test_dom_orchestrator_service.py::test_process_chat_message_ic5_light_streaming
+FAILED app/tests/test_dom_orchestrator_service.py::test_process_chat_message_research_mode_on_with_rag_context
+FAILED app/tests/test_dom_orchestrator_service.py::test_process_chat_message_research_mode_on_no_rag_context
+FAILED app/tests/test_endpoints_admin.py::test_list_knowledge_documents_unauthorized
+FAILED app/tests/test_endpoints_auth.py::test_read_current_user_success - Typ...
+FAILED app/tests/test_endpoints_auth.py::test_read_current_user_inactive_user
+FAILED app/tests/test_endpoints_auth.py::test_get_current_admin_user_success
+FAILED app/tests/test_endpoints_auth.py::test_get_current_admin_user_forbidden
+FAILED app/tests/test_endpoints_chat.py::test_stream_chat_response_success - ...
+FAILED app/tests/test_endpoints_chat.py::test_stream_chat_response_research_mode_on
+FAILED app/tests/test_endpoints_chat.py::test_stream_chat_response_unauthorized_session
+FAILED app/tests/test_endpoints_feedback.py::test_submit_feedback_success - T...
+FAILED app/tests/test_endpoints_feedback.py::test_get_feedback_for_session_success
+FAILED app/tests/test_endpoints_feedback.py::test_get_feedback_for_message_success
+FAILED app/tests/test_endpoints_feedback.py::test_get_feedback_for_message_not_found
+FAILED app/tests/test_endpoints_feedback.py::test_get_feedback_for_message_unauthorized
+FAILED app/tests/test_endpoints_files.py::test_upload_file_global_rag_success
+FAILED app/tests/test_endpoints_files.py::test_upload_file_ephemeral_rag_success
+FAILED app/tests/test_endpoints_files.py::test_upload_file_no_filename - Asse...
+FAILED app/tests/test_endpoints_files.py::test_upload_file_validation_error
+FAILED app/tests/test_rag_service.py::test_rag_service_initialization - TypeE...
+ERROR app/tests/test_rag_service.py::test_query_rag - TypeError: missing a re...
+ERROR app/tests/test_rag_service.py::test_add_documents - TypeError: missing ...
+ERROR app/tests/test_rag_service.py::test_stream_rag_response - TypeError: mi...
+ERROR app/tests/test_repositories.py::test_base_repository_get_no_tenant_filter
+ERROR app/tests/test_repositories.py::test_base_repository_get_with_tenant_filter
+ERROR app/tests/test_repositories.py::test_base_repository_create_with_tenant_auto_assign
+ERROR app/tests/test_repositories.py::test_tenant_repository_get_by_name - Na...
+ERROR app/tests/test_repositories.py::test_user_repository_get_by_email_with_tenant
+ERROR app/tests/test_repositories.py::test_user_repository_get_by_email_no_tenant
+============= 21 failed, 24 passed, 5 warnings, 9 errors in 2.20s ==============

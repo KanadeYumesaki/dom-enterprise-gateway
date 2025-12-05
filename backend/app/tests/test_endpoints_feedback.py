@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+from fastapi.encoders import jsonable_encoder
 from unittest.mock import AsyncMock, patch
 from uuid import UUID, uuid4
 from datetime import datetime, timezone
@@ -73,7 +74,7 @@ async def test_submit_feedback_success(
         updated_at=datetime.now(timezone.utc)
     )
 
-    response = client.post("/api/v1/feedback", json=feedback_data.model_dump())
+    response = client.post("/api/v1/feedback", json=jsonable_encoder(feedback_data.model_dump()))
     assert response.status_code == 201
     assert response.json()["rating"] == 1
     assert response.json()["comment"] == "Great response!"
