@@ -35,7 +35,7 @@ FastAPI + LangChain + PostgreSQL + Redis をベースに、OIDC 認証と RAG �
 
 ## 開発環境
 
-- WSL2 + Ubuntu (想定: `/home/masahiro/work/dom-enterprise-gateway`)
+- WSL2 + Ubuntu
 - Python 3.12
 - Poetry 1.8 以降
 - (任意) Docker / docker-compose
