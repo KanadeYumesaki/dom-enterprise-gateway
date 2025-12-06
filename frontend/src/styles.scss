@@ -1,1 +1,47 @@
-/* You can add global styles to this file, and also import other style files */
+/**
+ * styles.scss (グローバルスタイル)
+ * 
+ * 役割:
+ * - アプリケーション全体に適用されるスタイルを定義します。
+ * - Angular Material のテーマを読み込み、Material Design の見た目を有効化します。
+ * 
+ * なぜここでテーマを読み込むのか:
+ * - Angular Material コンポーネント (mat-card, mat-toolbar 等) は、
+ *   テーマが適用されていないと正しくスタイルが当たりません。
+ * - ここで一度読み込むことで、アプリ全体で Material Design が使えるようになります。
+ */
+
+/* Angular Material テーマの読み込み */
+@use '@angular/material' as mat;
+
+/* 
+ * mat.core() は Angular Material の基本スタイル（リップル、フォーカス等）を含みます。
+ * 必ず最初に呼び出す必要があります。
+ */
+
+/* 
+ * プリビルドテーマを使用する場合 (Indigo-Pink):
+ * テーマファイルを直接インポートすることでカラーパレットが適用されます。
+ */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* 
+ * html, body の基本設定
+ * - height: 100% は mat-sidenav-container が画面全体を使うために必要です。
+ * - margin: 0 はブラウザデフォルトの余白を消します。
+ */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* 
+ * body のフォント設定
+ * - Material Design 推奨フォント (Roboto) を指定します。
+ * - システムフォールバックも含めて読みやすさを確保します。
+ */
+body {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #fafafa; /* 薄いグレー背景 (Material Design 標準) */
+}

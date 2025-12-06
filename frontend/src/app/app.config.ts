@@ -10,6 +10,7 @@ import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { routes } from './app.routes';
 
@@ -21,6 +22,7 @@ import { routes } from './app.routes';
  * - ルーティング
  * - HTTPクライアント (fetch API利用 + DIインターセプター対応)
  * - クライアントハイドレーション (SSR用 + イベントリプレイ)
+ * - アニメーション (Angular Material が必要とする)
  */
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,5 +40,9 @@ export const appConfig: ApplicationConfig = {
 
     // SSR からブラウザへのハイドレーション＋イベントリプレイ
     provideClientHydration(withEventReplay()),
+
+    // Angular Material のアニメーションを有効化
+    // (mat-button, mat-card などのエフェクトに必要)
+    provideAnimationsAsync(),
   ],
 };
