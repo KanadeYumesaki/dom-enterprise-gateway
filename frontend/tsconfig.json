@@ -19,6 +19,9 @@
       "@app/*": [
         "src/app/*"
       ],
+      "@core/*": [
+        "src/app/core/*"
+      ],
       "@environments/*": [
         "src/environments/*"
       ]

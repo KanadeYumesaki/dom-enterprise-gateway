@@ -1,0 +1,40 @@
+<div class="knowledge-page-container">
+    <!-- ヘッダーエリア -->
+    <div class="knowledge-header">
+        <h2>ナレッジ管理</h2>
+        <p class="subtitle">アップロードされたドキュメントの一覧と詳細を表示します（管理者専用）</p>
+    </div>
+
+    <!-- プログレスバー (ロード中) -->
+    @if (isLoading()) {
+    <mat-progress-bar mode="indeterminate" class="loading-progress"></mat-progress-bar>
+    }
+
+    <!-- メインコンテンツエリア -->
+    <div class="knowledge-content">
+        <!-- 左側: 検索 + 一覧 -->
+        <div class="list-area">
+            <!-- 検索フォーム -->
+            <app-knowledge-filter-form (search)="onSearch($event)" />
+
+            <mat-divider></mat-divider>
+
+            <!-- ドキュメント一覧 -->
+            <app-knowledge-list [documents]="documents()" [isLoading]="isLoading()"
+                (selectDocument)="onSelectDocument($event)" />
+        </div>
+
+        <!-- 右側: 詳細表示（選択時のみ） -->
+        @if (selectedDetail()) {
+        <div class="detail-area">
+            <div class="detail-header">
+                <h3>ドキュメント詳細</h3>
+                <button mat-icon-button (click)="onCloseDetail()" matTooltip="閉じる">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+            <app-knowledge-detail [detail]="selectedDetail()!" />
+        </div>
+        }
+    </div>
+</div>

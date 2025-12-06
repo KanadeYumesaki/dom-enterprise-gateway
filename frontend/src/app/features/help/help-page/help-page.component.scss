@@ -1,0 +1,32 @@
+.page {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+  padding: 16px;
+}
+
+.pane {
+  min-height: 360px;
+}
+
+.list-pane mat-nav-list a.active {
+  background: rgba(25, 118, 210, 0.08);
+}
+
+.loading,
+.error {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-pane .content {
+  white-space: pre-wrap;
+  font-family: "Noto Sans JP", system-ui, -apple-system, sans-serif;
+}
+
+@media (max-width: 960px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,86 @@
+.knowledge-page-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--mdc-theme-background, #fafafa);
+}
+
+.knowledge-header {
+    padding: 1.5rem;
+    background-color: var(--mdc-theme-surface, #ffffff);
+    border-bottom: 1px solid var(--mdc-theme-outline, rgba(0, 0, 0, 0.12));
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--mdc-theme-on-surface, rgba(0, 0, 0, 0.87));
+    }
+
+    .subtitle {
+        margin: 0;
+        font-size: 0.875rem;
+        color: var(--mdc-theme-text-secondary-on-background, rgba(0, 0, 0, 0.6));
+    }
+}
+
+.loading-progress {
+    height: 3px;
+}
+
+.knowledge-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+
+    .list-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        background-color: var(--mdc-theme-surface, #ffffff);
+    }
+
+    .detail-area {
+        flex: 0 0 400px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-left: 1px solid var(--mdc-theme-outline, rgba(0, 0, 0, 0.12));
+        background-color: var(--mdc-theme-surface, #ffffff);
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid var(--mdc-theme-outline, rgba(0, 0, 0, 0.12));
+
+            h3 {
+                margin: 0;
+                font-size: 1.125rem;
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+// レスポンシブ対応（将来拡張）
+@media (max-width: 768px) {
+    .knowledge-content {
+        flex-direction: column;
+
+        .detail-area {
+            flex: 1;
+            border-left: none;
+            border-top: 1px solid var(--mdc-theme-outline, rgba(0, 0, 0, 0.12));
+        }
+    }
+}
+
+// Snackbar カスタムスタイル（グローバルに定義する場合は styles.scss に移動）
+:host ::ng-deep .snackbar-error {
+    background-color: var(--mdc-theme-error, #d32f2f);
+    color: white;
+}

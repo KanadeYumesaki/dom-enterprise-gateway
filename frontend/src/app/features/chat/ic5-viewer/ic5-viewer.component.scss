@@ -1,0 +1,74 @@
+.ic5-card {
+    margin: 1rem 0;
+    border-left: 4px solid var(--mdc-theme-primary, #1976d2);
+
+    mat-card-header {
+        mat-card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.125rem;
+
+            mat-icon {
+                color: var(--mdc-theme-primary, #1976d2);
+            }
+        }
+
+        .warning {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--mdc-theme-error, #d32f2f);
+
+            mat-icon {
+                font-size: 16px;
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+
+    mat-card-content {
+        padding-top: 1rem;
+    }
+}
+
+.tab-content {
+    padding: 1.5rem 1rem;
+
+    h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--mdc-theme-on-surface, rgba(0, 0, 0, 0.87));
+    }
+
+    p {
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    .no-data {
+        color: var(--mdc-theme-text-secondary-on-background, rgba(0, 0, 0, 0.6));
+        font-style: italic;
+    }
+
+    mat-list {
+        mat-list-item {
+            mat-icon {
+                color: var(--mdc-theme-primary, #1976d2);
+            }
+        }
+    }
+
+    ul {
+        padding-left: 1.5rem;
+        margin: 0.5rem 0;
+
+        li {
+            margin: 0.5rem 0;
+            color: var(--mdc-theme-error, #d32f2f);
+        }
+    }
+}

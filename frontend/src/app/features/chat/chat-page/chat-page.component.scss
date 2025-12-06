@@ -1,0 +1,71 @@
+.chat-page-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--mdc-theme-background, #fafafa);
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background-color: var(--mdc-theme-surface, #ffffff);
+    border-bottom: 1px solid var(--mdc-theme-outline, rgba(0, 0, 0, 0.12));
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--mdc-theme-on-surface, rgba(0, 0, 0, 0.87));
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+}
+
+.streaming-progress {
+    height: 3px;
+}
+
+.chat-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+
+    .messages-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+    }
+}
+
+.chat-input-area {
+    flex-shrink: 0;
+    background-color: var(--mdc-theme-surface, #ffffff);
+    border-top: 2px solid var(--mdc-theme-primary, #1976d2);
+}
+
+// Snackbar カスタムスタイル（グローバルに定義する場合は styles.scss に移動）
+:host ::ng-deep .snackbar-error {
+    background-color: var(--mdc-theme-error, #d32f2f);
+    color: white;
+}
+
+// レスポンシブ対応 (将来拡張)
+@media (max-width: 768px) {
+    .chat-header h2 {
+        font-size: 1.125rem;
+    }
+
+    .chat-content {
+        .messages-area {
+            padding: 0.5rem;
+        }
+    }
+}

@@ -1,0 +1,44 @@
+<div class="chat-input-container">
+    <!-- サンプルプロンプト（テンプレート） -->
+    <div class="templates">
+        <span class="templates-label">テンプレート:</span>
+        <mat-chip-set>
+            @for (template of templates; track template) {
+            <mat-chip (click)="onUseTemplate(template)">
+                {{ template }}
+            </mat-chip>
+            }
+        </mat-chip-set>
+    </div>
+
+    <!-- 入力フォーム -->
+    <div class="input-form">
+        <mat-form-field appearance="outline" class="message-field">
+            <mat-label>メッセージを入力...</mat-label>
+            <textarea matInput [(ngModel)]="messageText" (keydown)="onKeydown($event)" [disabled]="isBusy()" rows="3"
+                placeholder="メッセージを入力してください（Shift+Enterで改行、Enterで送信）"></textarea>
+        </mat-form-field>
+
+        <div class="actions">
+            <!-- ファイル添付ボタン -->
+            <input type="file" #fileInput (change)="onFileSelected($event)" multiple
+                accept=".pdf,.txt,.md,.docx,.pptx,.xlsx" style="display: none;" />
+            <button mat-icon-button (click)="fileInput.click()" [disabled]="isBusy()" matTooltip="ファイルを添付">
+                <mat-icon>attach_file</mat-icon>
+            </button>
+
+            <!-- リサーチモードトグル -->
+            <mat-slide-toggle [(ngModel)]="isResearchMode" [disabled]="isBusy()"
+                matTooltip="高度リサーチモードを有効にすると、複数のステップで詳細な調査を行います。" class="research-toggle">
+                <span class="toggle-label">リサーチモード</span>
+            </mat-slide-toggle>
+
+            <!-- 送信ボタン -->
+            <button mat-raised-button color="primary" (click)="onSend()" [disabled]="!messageText().trim() || isBusy()"
+                class="send-button">
+                <mat-icon>send</mat-icon>
+                送信
+            </button>
+        </div>
+    </div>
+</div>

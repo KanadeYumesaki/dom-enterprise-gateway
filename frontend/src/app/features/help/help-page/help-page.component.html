@@ -1,0 +1,43 @@
+<div class="page">
+  <mat-card class="pane list-pane">
+    <mat-card-header>
+      <mat-card-title>ヘルプ一覧</mat-card-title>
+      <mat-card-subtitle>困ったときはここから探せます</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="loading" *ngIf="isLoading()">
+        <mat-progress-spinner diameter="32" mode="indeterminate"></mat-progress-spinner>
+        <span>読み込み中...</span>
+      </div>
+      <div class="error" *ngIf="error() && !isLoading()">
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error()?.message }}</span>
+        <button mat-stroked-button color="primary" (click)="loadSections()">再読み込み</button>
+      </div>
+      <mat-nav-list *ngIf="!isLoading() && !error()">
+        <a mat-list-item
+           *ngFor="let section of sections()"
+           [class.active]="selected()?.id === section.id"
+           (click)="onSelect(section)">
+          <div matListItemTitle>{{ section.title }}</div>
+          <div matListItemLine>{{ section.updatedAt || '' }}</div>
+        </a>
+      </mat-nav-list>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="pane detail-pane">
+    <mat-card-header>
+      <mat-card-title>{{ selected()?.title || 'ヘルプを選択してください' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="!selected() && !isLoading()">
+        左の一覧からトピックを選んでください。
+      </div>
+      <div *ngIf="selected()">
+        <!-- P1: Markdown レンダリング対応を追加予定 -->
+        <pre class="content">{{ selected()?.content }}</pre>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

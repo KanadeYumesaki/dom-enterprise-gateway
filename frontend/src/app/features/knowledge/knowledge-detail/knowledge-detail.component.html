@@ -1,0 +1,63 @@
+<mat-card class="detail-card">
+    <mat-card-header>
+        <mat-icon [fontIcon]="getFileIcon(detail().doc.fileType)" mat-card-avatar class="file-icon-large"></mat-icon>
+        <mat-card-title>{{ detail().doc.fileName }}</mat-card-title>
+        <mat-card-subtitle>ドキュメント詳細</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <div class="metadata-section">
+            <h3>基本情報</h3>
+            <mat-divider></mat-divider>
+
+            <div class="metadata-row">
+                <span class="label">ファイルID:</span>
+                <span class="value">{{ detail().doc.id }}</span>
+            </div>
+
+            <div class="metadata-row">
+                <span class="label">ファイルタイプ:</span>
+                <span class="value">{{ detail().doc.fileType || '不明' }}</span>
+            </div>
+
+            <div class="metadata-row">
+                <span class="label">ファイルサイズ:</span>
+                <span class="value">{{ detail().doc.fileSize || '-' }}</span>
+            </div>
+
+            <div class="metadata-row">
+                <span class="label">アップロード日時:</span>
+                <span class="value">{{ detail().doc.createdAt | date:'medium' }}</span>
+            </div>
+
+            <div class="metadata-row">
+                <span class="label">更新日時:</span>
+                <span class="value">{{ detail().doc.updatedAt | date:'medium' }}</span>
+            </div>
+
+            <div class="metadata-row">
+                <span class="label">アップロードユーザーID:</span>
+                <span class="value">{{ detail().doc.uploadedByUserId || '不明' }}</span>
+            </div>
+
+            <div class="metadata-row">
+                <span class="label">アクティブ状態:</span>
+                <span class="value">{{ detail().doc.isActive ? '有効' : '無効' }}</span>
+            </div>
+        </div>
+
+        <!-- P1: ファイル内容プレビュー（将来実装） -->
+        @if (detail().previewText) {
+        <div class="preview-section">
+            <h3>プレビュー</h3>
+            <mat-divider></mat-divider>
+            <pre class="preview-text">{{ detail().previewText }}</pre>
+        </div>
+        } @else {
+        <div class="preview-placeholder">
+            <mat-icon>preview</mat-icon>
+            <p>ファイル内容のプレビューは P1 で実装予定です。</p>
+        </div>
+        }
+    </mat-card-content>
+</mat-card>
