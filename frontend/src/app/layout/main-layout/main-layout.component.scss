@@ -1,0 +1,21 @@
+.sidenav-container {
+    height: 100vh; // 画面いっぱい
+}
+
+.app-sidenav {
+    width: 250px; // サイドバーの幅
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.app-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.page-container {
+    flex: 1; // 残りの高さを埋める
+    padding: 24px; // コンテンツの余白
+    overflow: auto; // スクロール可能に
+    background-color: #fafafa; // 背景色
+}

@@ -1,0 +1,41 @@
+<mat-nav-list class="sidebar-list">
+
+    <!-- チャット -->
+    <a mat-list-item routerLink="/chat" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>chat</mat-icon>
+        <div matListItemTitle>Chat</div>
+    </a>
+
+    <!-- セッション履歴 -->
+    <a mat-list-item routerLink="/sessions" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>history</mat-icon>
+        <div matListItemTitle>Sessions</div>
+    </a>
+
+    <!-- メモリ (長期記憶) -->
+    <a mat-list-item routerLink="/memory" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>memory</mat-icon>
+        <div matListItemTitle>Memory</div>
+    </a>
+
+    <!-- ナレッジ (管理者のみ) -->
+    <a mat-list-item *ngIf="isAdmin" routerLink="/knowledge" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>library_books</mat-icon>
+        <div matListItemTitle>Knowledge</div>
+    </a>
+
+    <mat-divider style="margin: 8px 0;"></mat-divider>
+
+    <!-- 設定 -->
+    <a mat-list-item routerLink="/settings" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>settings</mat-icon>
+        <div matListItemTitle>Settings</div>
+    </a>
+
+    <!-- ヘルプ -->
+    <a mat-list-item routerLink="/help" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>help</mat-icon>
+        <div matListItemTitle>Help</div>
+    </a>
+
+</mat-nav-list>

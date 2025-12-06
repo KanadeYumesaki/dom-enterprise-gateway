@@ -1,0 +1,32 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5; // 薄いグレー背景
+}
+
+.login-card {
+    max-width: 400px;
+    width: 90%;
+    padding: 16px;
+
+    mat-card-header {
+        margin-bottom: 16px;
+    }
+
+    .description {
+        line-height: 1.6;
+        color: rgba(0, 0, 0, 0.6); // 少し薄い文字色
+        margin-bottom: 24px;
+    }
+
+    .error-message {
+        color: #b00020; // Material Design のエラー色
+        background-color: #fce8e6;
+        padding: 8px;
+        border-radius: 4px;
+        margin-top: 16px;
+        font-size: 14px;
+    }
+}

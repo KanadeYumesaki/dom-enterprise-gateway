@@ -1,0 +1,27 @@
+<div class="login-container">
+    <mat-card class="login-card">
+        <mat-card-header>
+            <mat-card-title>DOM Enterprise Gateway</mat-card-title>
+            <mat-card-subtitle>エンタープライズ向け生成AIチャット</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+            <p class="description">
+                セキュアな環境で、ドキュメント検索やAIとのチャットを行うことができます。<br>
+                利用を開始するには、ログインしてください。
+            </p>
+
+            <!-- エラーメッセージがある場合のみ表示 -->
+            <div *ngIf="errorMessage" class="error-message">
+                {{ errorMessage }}
+            </div>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+            <!-- ログインボタン (再試行も兼ねる) -->
+            <button mat-raised-button color="primary" (click)="onLogin()">
+                ログインする
+            </button>
+        </mat-card-actions>
+    </mat-card>
+</div>

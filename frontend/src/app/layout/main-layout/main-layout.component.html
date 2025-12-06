@@ -1,0 +1,23 @@
+<mat-sidenav-container class="sidenav-container">
+
+    <!-- サイドバー (左側のメニュー) -->
+    <mat-sidenav #sidenav mode="side" opened class="app-sidenav">
+        <app-sidebar [user]="user()"></app-sidebar>
+    </mat-sidenav>
+
+    <!-- メインコンテンツ (右側) -->
+    <mat-sidenav-content class="app-content">
+
+        <!-- ヘッダー (上部バー) -->
+        <!-- メニューボタンを押したら sidenav を開閉するなどの連携も可能ですが、P0では常時表示とします -->
+        <app-header [user]="user()" (logout)="onLogout()">
+        </app-header>
+
+        <!-- ページごとの中身 -->
+        <main class="page-container">
+            <router-outlet></router-outlet>
+        </main>
+
+    </mat-sidenav-content>
+
+</mat-sidenav-container>
