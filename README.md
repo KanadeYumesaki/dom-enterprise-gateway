@@ -11,15 +11,16 @@ FastAPI + LangChain + PostgreSQL + Redis をベースに、OIDC 認証と RAG �
 アプリケーション全体の構成は次の通りです。
 
 ```mermaid
+
 flowchart LR
-  User["エンドユーザー<br/>(Webブラウザ)"] -->|HTTPS| Frontend["Angular 20<br/>Zoneless + SSR + Material"]
+  User["エンドユーザー<br/>(Webブラウザ)"] --> Frontend["Angular 20<br/>Zoneless + SSR + Material"]
 
-  Frontend -->|/api/* (BFF)| Backend["FastAPI<br/>BFF + ドメインサービス"]
-  Backend -->|"SQL / pgvector"| Postgres["PostgreSQL 15+ / pgvector"]
-  Backend -->|"セッション / キャッシュ"| Redis["Redis"]
+  Frontend --> Backend["FastAPI<br/>BFF + ドメインサービス"]
+  Backend --> Postgres["PostgreSQL 15+ / pgvector"]
+  Backend --> Redis["Redis"]
 
-  Backend -->|"LLM API"| LLM["Gemini (P0)"]
-  Backend -->|"OIDC"| IdP["企業IdP<br/>(Azure AD 等)"]
+  Backend --> LLM["Gemini (P0)"]
+  Backend --> IdP["企業 IdP<br/>(Azure AD 等)"]
 
   subgraph Services["Backend Services"]
     ChatSvc["ChatService<br/>(マルチエージェント)"]
@@ -30,7 +31,13 @@ flowchart LR
 
   Backend --- Services
 
-````
+```
+- User → Frontend: HTTPS
+- Frontend → Backend: /api/* (BFF 経由)
+- Backend → Postgres: SQL + pgvector
+- Backend → Redis: セッション / キャッシュ
+- Backend → LLM: LLM API (Gemini)
+- Backend → IdP: OIDC
 
 * Frontend:
 
