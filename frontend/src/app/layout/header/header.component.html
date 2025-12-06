@@ -1,0 +1,30 @@
+<mat-toolbar color="primary" class="app-header">
+
+    <!-- 左側: アイコンとアプリ名 -->
+    <button mat-icon-button class="menu-button" aria-label="Menu icon">
+        <mat-icon>menu</mat-icon>
+    </button>
+
+    <span class="app-title">DOM Enterprise Gateway</span>
+
+    <!-- 環境ラベル (本番以外で表示) -->
+    <span *ngIf="!isProduction" class="env-badge">DEV</span>
+
+    <span class="spacer"></span>
+
+    <!-- 右側: ユーザー情報とログアウト -->
+    <div class="user-info" *ngIf="user; else notLoggedIn">
+        <span class="user-name">{{ user.name }}</span>
+        <span class="user-role-badge">{{ roleLabel }}</span>
+
+        <button mat-icon-button (click)="onLogout()" aria-label="Logout">
+            <mat-icon>logout</mat-icon>
+        </button>
+    </div>
+
+    <!-- 万が一ユーザーがnullの場合 (基本的にはありえないが安全策) -->
+    <ng-template #notLoggedIn>
+        <span class="not-logged-in">未ログイン</span>
+    </ng-template>
+
+</mat-toolbar>

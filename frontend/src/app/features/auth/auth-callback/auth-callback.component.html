@@ -1,0 +1,23 @@
+<div class="callback-container">
+    <mat-card class="callback-card">
+        <mat-card-content class="content-wrapper">
+
+            <!-- ロード中 -->
+            <ng-container *ngIf="isLoading; else errorState">
+                <mat-spinner diameter="50" color="primary"></mat-spinner>
+                <p class="status-text">ログイン処理中です...</p>
+            </ng-container>
+
+            <!-- エラー時 -->
+            <ng-template #errorState>
+                <div class="error-wrapper">
+                    <p class="error-message">{{ errorMessage }}</p>
+                    <button mat-stroked-button color="warn" (click)="goBackToLogin()">
+                        ログイン画面に戻る
+                    </button>
+                </div>
+            </ng-template>
+
+        </mat-card-content>
+    </mat-card>
+</div>
