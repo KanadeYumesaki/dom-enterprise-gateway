@@ -1,0 +1,72 @@
+.chat-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--mdc-theme-surface, #ffffff);
+    border-top: 1px solid var(--mdc-theme-outline, rgba(0, 0, 0, 0.12));
+}
+
+.templates {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .templates-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--mdc-theme-text-secondary-on-background, rgba(0, 0, 0, 0.6));
+    }
+
+    mat-chip-set {
+        mat-chip {
+            cursor: pointer;
+            font-size: 0.813rem;
+
+            &:hover {
+                background-color: var(--mdc-theme-primary-container, #e3f2fd);
+            }
+        }
+    }
+}
+
+.input-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.message-field {
+    width: 100%;
+
+    textarea {
+        resize: vertical;
+        min-height: 60px;
+    }
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: flex-end;
+
+    .research-toggle {
+        margin-right: auto;
+
+        .toggle-label {
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+    }
+
+    .send-button {
+        mat-icon {
+            margin-right: 0.25rem;
+        }
+    }
+}
+
+// SSR対応: ブラウザ専用CSSをガードする必要はないが、
+// レイアウトが崩れないよう基本スタイルを優先

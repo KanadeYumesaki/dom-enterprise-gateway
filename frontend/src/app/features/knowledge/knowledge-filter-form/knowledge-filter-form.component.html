@@ -1,0 +1,10 @@
+<div class="filter-form-container">
+    <mat-form-field appearance="outline" class="search-field">
+        <mat-label>ファイル名で検索</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="例: report.pdf" type="text" />
+        <button mat-icon-button matSuffix (click)="onClear()" *ngIf="searchControl.value" matTooltip="クリア">
+            <mat-icon>clear</mat-icon>
+        </button>
+        <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+</div>

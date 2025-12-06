@@ -1,0 +1,40 @@
+@if (attachments().length > 0) {
+<div class="attachment-list-container">
+    <h4>添付ファイル</h4>
+    <mat-list>
+        @for (attachment of attachments(); track attachment.id) {
+        <mat-list-item [class]="getStatusClass(attachment.status)">
+            <mat-icon matListItemIcon [fontIcon]="getStatusIcon(attachment.status)"></mat-icon>
+            <div matListItemTitle>
+                {{ attachment.fileName }}
+                <span class="file-size">({{ formatFileSize(attachment.fileSize) }})</span>
+            </div>
+            <div matListItemLine class="status-line">
+                @switch (attachment.status) {
+                @case ('pending') {
+                <span>アップロード待機中...</span>
+                }
+                @case ('uploading') {
+                <span>アップロード中...</span>
+                <mat-progress-bar mode="indeterminate" class="upload-progress"></mat-progress-bar>
+                }
+                @case ('uploaded') {
+                <span class="success">アップロード完了</span>
+                }
+                @case ('failed') {
+                <span class="error">
+                    アップロード失敗: {{ attachment.error?.message || '不明なエラー' }}
+                </span>
+                }
+                }
+            </div>
+            <button mat-icon-button matListItemMeta (click)="onRemove(attachment.id)"
+                [matTooltip]="attachment.status === 'uploading' ? 'アップロード中は削除できません' : '削除'"
+                [disabled]="attachment.status === 'uploading'">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-list-item>
+        }
+    </mat-list>
+</div>
+}

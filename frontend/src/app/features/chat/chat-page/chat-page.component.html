@@ -1,0 +1,41 @@
+<div class="chat-page-container">
+    <!-- ヘッダーエリア (セッション管理) -->
+    <div class="chat-header">
+        <h2>チャット</h2>
+        <div class="header-actions">
+            <button mat-icon-button (click)="onResetSession()" [disabled]="!currentSessionId() || isBusy()"
+                matTooltip="セッションをリセット">
+                <mat-icon>refresh</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- プログレスバー (ストリーミング中) -->
+    @if (isStreaming()) {
+    <mat-progress-bar mode="indeterminate" class="streaming-progress"></mat-progress-bar>
+    }
+
+    <!-- メインコンテンツエリア -->
+    <div class="chat-content">
+        <!-- 左側: メッセージ一覧 + IC-5表示 -->
+        <div class="messages-area">
+            <app-message-list [messages]="messages()" [isStreaming]="isStreaming()"
+                [streamingContent]="streamingContent()" />
+
+            <!-- IC-5ライト表示 -->
+            <app-ic5-viewer [ic5]="ic5()" />
+        </div>
+
+        <!-- 右側:  将来的にサイドバーや追加情報を表示する場合に使用 -->
+        <!-- 現時点では非表示 -->
+    </div>
+
+    <!-- 入力エリア -->
+    <div class="chat-input-area">
+        <!-- ファイル添付一覧 -->
+        <app-attachment-list [attachments]="attachments()" (remove)="onRemoveAttachment($event)" />
+
+        <!-- メッセージ入力 -->
+        <app-chat-input [isBusy]="isBusy()" (send)="onSendMessage($event)" (attachFiles)="onAttachFiles($event)" />
+    </div>
+</div>

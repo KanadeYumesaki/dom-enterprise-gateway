@@ -1,0 +1,69 @@
+@if (hasIc5(); as ic5Data) {
+<mat-card class="ic5-card">
+    <mat-card-header>
+        <mat-card-title>
+            <mat-icon>psychology</mat-icon>
+            IC-5 分析結果
+        </mat-card-title>
+        @if (hasWarnings()) {
+        <mat-card-subtitle class="warning">
+            <mat-icon>warning</mat-icon>
+            パース時に警告があります
+        </mat-card-subtitle>
+        }
+    </mat-card-header>
+
+    <mat-card-content>
+        <mat-tab-group>
+            <!-- Decision タブ -->
+            <mat-tab label="Decision（結論）">
+                <div class="tab-content">
+                    <h3>🎯 結論</h3>
+                    <p [innerHTML]="ic5()!.decision || '（情報なし）'"></p>
+                </div>
+            </mat-tab>
+
+            <!-- Why タブ -->
+            <mat-tab label="Why（理由）">
+                <div class="tab-content">
+                    <h3>💡 理由・背景</h3>
+                    <p [innerHTML]="ic5()!.why || '（情報なし）'"></p>
+                </div>
+            </mat-tab>
+
+            <!-- Next 3 Actions タブ -->
+            <mat-tab label="Next 3 Actions（次のステップ）">
+                <div class="tab-content">
+                    <h3>🚀 次の3つのアクション</h3>
+                    @if (ic5()!.nextActions.length > 0) {
+                    <mat-list>
+                        @for (action of ic5()!.nextActions; track $index) {
+                        <mat-list-item>
+                            <mat-icon matListItemIcon>check_circle_outline</mat-icon>
+                            <span matListItemTitle>{{ $index + 1 }}. {{ action }}</span>
+                        </mat-list-item>
+                        }
+                    </mat-list>
+                    } @else {
+                    <p class="no-data">次のアクションが指定されていません。</p>
+                    }
+                </div>
+            </mat-tab>
+
+            <!-- パース警告（ある場合のみ） -->
+            @if (hasWarnings()) {
+            <mat-tab label="⚠️ 警告">
+                <div class="tab-content">
+                    <h3>パース時の警告</h3>
+                    <ul>
+                        @for (warning of ic5()!.parseWarnings; track warning) {
+                        <li>{{ warning }}</li>
+                        }
+                    </ul>
+                </div>
+            </mat-tab>
+            }
+        </mat-tab-group>
+    </mat-card-content>
+</mat-card>
+}

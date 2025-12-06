@@ -3,7 +3,10 @@ import { Component } from '@angular/core';
 import { LoginPageComponent } from './features/auth/login-page/login-page.component';
 import { AuthCallbackComponent } from './features/auth/auth-callback/auth-callback.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
+import { ChatPageComponent } from './features/chat/chat-page/chat-page.component';
+import { KnowledgePageComponent } from './features/knowledge/knowledge-page/knowledge-page.component';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 // 一時的なプレースホルダコンポーネント (未実装機能用)
 @Component({
@@ -11,7 +14,7 @@ import { authGuard } from './core/guards/auth.guard';
     template: `
     <div style="padding: 24px;">
       <h2>Construction in Progress</h2>
-      <p>この機能は現在開発中です (Task 7.2 以降で実装予定)。</p>
+      <p>この機能は現在開発中です (Task 7.4 以降で実装予定)。</p>
     </div>
   `
 })
@@ -37,10 +40,14 @@ export const routes: Routes = [
         canMatch: [authGuard], // ガード: 未ログインなら login へ
         children: [
             { path: '', redirectTo: 'chat', pathMatch: 'full' },
-            { path: 'chat', component: WipComponent },
+            { path: 'chat', component: ChatPageComponent }, // ✅ Task 7.2 完了
             { path: 'sessions', component: WipComponent },
             { path: 'memory', component: WipComponent },
-            { path: 'knowledge', component: WipComponent },
+            {
+                path: 'knowledge',
+                component: KnowledgePageComponent,
+                canActivate: [adminGuard] // ✅ Task 7.3 完了（管理者専用）
+            },
             { path: 'settings', component: WipComponent },
             { path: 'help', component: WipComponent },
         ]
