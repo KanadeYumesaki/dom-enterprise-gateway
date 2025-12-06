@@ -38,7 +38,7 @@ export const adminGuard: CanActivateFn = (route, state) => {
     // ユーザーが管理者かチェック
     // TODO: Backend の AuthenticatedUser に is_admin フラグまたは role を追加予定
     // 暫定的に、特定のメールアドレスまたは環境変数で管理者を判定する
-    const isAdmin = currentUser.is_admin === true;
+    const isAdmin = currentUser.roles.includes('admin');
 
     if (!isAdmin) {
         console.warn('[AdminGuard] User is not an admin. Redirecting to /chat.');

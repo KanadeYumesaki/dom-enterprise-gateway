@@ -18,6 +18,7 @@ import {
     KnowledgeError
 } from '../models/knowledge.models';
 import { UserSettings, UserSettingsUpdate, SettingsError } from '../models/settings.models';
+import { HelpSection } from '../models/help.models';
 
 /**
  * ApiService (API通信サービス)
@@ -532,7 +533,7 @@ export class ApiService {
      * @returns Promise<any> HelpSection | HelpSection[]
      * @throws エラー時は通常のHTTPエラー
      */
-    async getHelpContent(sectionId?: string, category: 'user' | 'admin' | 'all' = 'user'): Promise<any> {
+    async getHelpContent(sectionId?: string, category: 'user' | 'admin' | 'all' = 'user'): Promise<HelpSection[] | HelpSection> {
         try {
             let params = new HttpParams();
             if (sectionId) {
@@ -541,7 +542,7 @@ export class ApiService {
             params = params.set('category', category);
 
             return await firstValueFrom(
-                this.get<any>('/api/help/content', { params })
+                this.get<HelpSection[] | HelpSection>('/api/help/content', { params })
             );
         } catch (error: unknown) {
             throw error;
