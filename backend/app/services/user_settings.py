@@ -1,9 +1,11 @@
 from typing import Annotated
 from uuid import UUID
+from datetime import datetime, timezone
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
+from app.core.database import get_db_session
+from app.dependencies import get_current_user
 from app.schemas.auth import AuthenticatedUser
 from app.schemas.user_settings import UserSettingsRead, UserSettingsUpdate, UserSettingsBase
 from app.repositories.user_settings import UserSettingsRepository
@@ -58,7 +60,7 @@ class UserSettingsService:
                 llm_profile=default.llm_profile,
                 has_seen_onboarding=default.has_seen_onboarding,
                 onboarding_skipped=default.onboarding_skipped,
-                created_at=None,  # type: ignore
+                created_at=datetime.now(timezone.utc),
                 updated_at=None
             )
     
@@ -91,8 +93,8 @@ class UserSettingsService:
         return UserSettingsRead.model_validate(updated)
 
 def get_user_settings_service(
-    db: Annotated[AsyncSession, Depends(get_db)],
-    current_user: Annotated[AuthenticatedUser, Depends()],  # 実際の依存関係は後で調整
+    db: Annotated[AsyncSession, Depends(get_db_session)],
+    current_user: Annotated[AuthenticatedUser, Depends(get_current_user)],
 ) -> UserSettingsService:
     """
     UserSettingsService の依存性注入用ファクトリ。

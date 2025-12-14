@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 from uuid import uuid4
 from app.schemas.user_settings import UserSettingsRead, UserSettingsUpdate, UserSettingsBase
 from app.services.user_settings import UserSettingsService
@@ -80,7 +81,7 @@ class TestUserSettingsService:
         assert result.theme == "dark"
         assert result.has_seen_onboarding == True
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def test_user(async_session):
     """
     テスト用のAuthenticatedUserを作成。
