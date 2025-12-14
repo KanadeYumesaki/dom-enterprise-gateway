@@ -22,7 +22,7 @@ class ChatMessageResponse(BaseModel):
     content: str
     raw_llm_response: dict | None = None
     created_at: datetime
-    updated_at: datetime
+    updated_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -43,7 +43,7 @@ class ChatSessionResponse(BaseModel):
     title: str | None = None
     is_active: bool
     created_at: datetime
-    updated_at: datetime
+    updated_at: datetime | None = None
 
     class Config:
         from_attributes = True

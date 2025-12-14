@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -28,6 +29,7 @@ import { ApiError } from '../../../core/models/api-error.model';
 export class AuthCallbackComponent implements OnInit {
     private authService = inject(AuthService);
     private router = inject(Router);
+    private platformId = inject(PLATFORM_ID);
 
     /** 処理中かどうか */
     isLoading = true;
@@ -41,6 +43,9 @@ export class AuthCallbackComponent implements OnInit {
      * 画面が表示された直後に実行されます。
      */
     ngOnInit(): void {
+        if (!isPlatformBrowser(this.platformId)) {
+            return;
+        }
         // URLにエラーパラメータが含まれているかチェック (例: ?error=access_denied)
         const params = new URLSearchParams(window.location.search);
         const errorParam = params.get('error');

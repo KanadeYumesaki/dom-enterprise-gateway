@@ -42,7 +42,7 @@ class UserSettings(Base):
     
     # タイムスタンプ（既存モデルと同じパターン）
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())  # nullable=True (暗黙)
+    updated_at = Column(DateTime(timezone=True), default=func.now(), server_default=func.now(), onupdate=func.now(), nullable=False)
     
    # ユニーク制約: (tenant_id, user_id) の組み合わせで1レコード
     __table_args__ = (

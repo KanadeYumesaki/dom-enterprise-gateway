@@ -15,8 +15,12 @@ from app.dependencies import (
     _sign_payload,
     STATE_COOKIE_NAME,
     SESSION_COOKIE_NAME,
+    get_db_session,
 )
 from app.core.config import settings
+from app.repositories.tenant import TenantRepository
+from app.repositories.user import UserRepository
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -62,7 +66,12 @@ async def dev_login(request: Request, redirect_uri: str = Query(..., description
 
 
 @router.get("/callback", response_model=AuthenticatedUser, summary="(DEV) 認証コールバック")
-async def dev_callback(request: Request, state: str = Query(...), code: str = Query(...)):
+async def dev_callback(
+    request: Request,
+    state: str = Query(...),
+    code: str = Query(...),
+    db: AsyncSession = Depends(get_db_session),
+):
     if not settings.DEV_AUTH_ENABLED:
         raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="OIDC callback not implemented yet")
 
@@ -72,12 +81,32 @@ async def dev_callback(request: Request, state: str = Query(...), code: str = Qu
     if code != "dev":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid code")
 
+    # DB に開発用テナント/ユーザーを upsert（FK欠如による500を防止）
+    tenant_repo = TenantRepository(db, tenant_id=None)
+    user_repo = UserRepository(db, tenant_id=None)
+
+    dev_tenant = await tenant_repo.get_by_name(settings.PROJECT_NAME)
+    if not dev_tenant:
+        dev_tenant = await tenant_repo.create({"name": settings.PROJECT_NAME})
+
+    dev_email = "dev@example.com"
+    dev_user_db = await user_repo.get_by_email(dev_email)
+    if not dev_user_db:
+        dev_user_db = await user_repo.create(
+            {
+                "tenant_id": dev_tenant.id,
+                "email": dev_email,
+                "hashed_password": "DEV_AUTH_DUMMY",
+                "is_admin": True,
+            }
+        )
+
     dev_user = AuthenticatedUser(
-        id=uuid4(),
-        tenant_id=uuid4(),
-        email="dev@example.com",
-        is_active=True,
-        is_admin=True,
+        id=dev_user_db.id,
+        tenant_id=dev_user_db.tenant_id,
+        email=dev_user_db.email,
+        is_active=dev_user_db.is_active,
+        is_admin=dev_user_db.is_admin,
     )
 
     session_token = _sign_payload(dev_user.model_dump())

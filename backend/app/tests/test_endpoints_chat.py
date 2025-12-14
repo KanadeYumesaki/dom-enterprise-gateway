@@ -115,6 +115,34 @@ async def test_get_chat_sessions_success(
     mock_chat_session_repo.get_by_user_id.assert_awaited_once_with(mock_current_user.id)
 
 @pytest.mark.asyncio
+async def test_get_chat_sessions_allows_null_updated_at(
+    override_get_current_user,
+    override_get_chat_session_repository,
+    mock_current_user,
+    mock_chat_session_repo
+):
+    """
+    updated_at が null のセッションでもレスポンスバリデーションエラーにならないことを確認します。
+    """
+    session_id = uuid4()
+    mock_chat_session_repo.get_by_user_id.return_value = [
+        ChatSessionResponse(
+            id=session_id,
+            user_id=mock_current_user.id,
+            tenant_id=mock_current_user.tenant_id,
+            title="Legacy Session",
+            is_active=True,
+            created_at=datetime.now(),
+            updated_at=None,
+        )
+    ]
+
+    response = client.get("/api/v1/chat/sessions")
+    assert response.status_code == 200
+    assert response.json()[0]["updated_at"] is None
+    mock_chat_session_repo.get_by_user_id.assert_awaited_once_with(mock_current_user.id)
+
+@pytest.mark.asyncio
 async def test_send_chat_message_success(
     override_get_current_user,
     override_get_chat_session_repository,
