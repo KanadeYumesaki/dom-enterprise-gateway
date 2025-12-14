@@ -59,8 +59,8 @@ export class AuthCallbackComponent implements OnInit {
     private processCallback(): void {
         this.authService.handleCallback().subscribe({
             next: () => {
-                console.log('[AuthCallback] 認証成功。メイン画面へ遷移します。');
-                this.router.navigate(['/']); // MainLayout (デフォルト子ルート /chat へ)
+                console.log('[AuthCallback] 認証成功。チャットへ遷移します。');
+                this.router.navigate(['/chat']);
             },
             error: (err: ApiError) => {
                 this.handleError(err);
@@ -76,15 +76,22 @@ export class AuthCallbackComponent implements OnInit {
         console.error('[AuthCallback] callback processing failed:', err);
         this.isLoading = false;
 
-        if (err.status === 0) {
-            // ネットワークエラー / サーバーダウン
-            this.errorMessage = '通信エラーです。再試行してください。';
-        } else if (err.status === 401 || err.status === 403) {
-            // 認証失敗
-            this.errorMessage = '認証に失敗しました。もう一度ログインしてください。';
-        } else {
-            // その他のエラー
-            this.errorMessage = '予期せぬエラーが発生しました。';
+        switch (err.status) {
+            case 0:
+                this.errorMessage = '通信エラーです。再試行してください。';
+                break;
+            case 400:
+                this.errorMessage = '認証パラメータが不正です。もう一度ログインしてください。';
+                break;
+            case 401:
+            case 403:
+                this.errorMessage = '認証に失敗しました。もう一度ログインしてください。';
+                break;
+            case 501:
+                this.errorMessage = '認証機能が無効化されています。管理者にお問い合わせください。';
+                break;
+            default:
+                this.errorMessage = '予期せぬエラーが発生しました。';
         }
     }
 

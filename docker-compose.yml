@@ -29,6 +29,8 @@ services:
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - DEV_AUTH_ENABLED=true
+      - SESSION_SECRET=${SESSION_SECRET:-dev-session-secret}
     depends_on:
       - postgres
       - redis

@@ -34,17 +34,16 @@ export class AuthService {
      * 
      * @param redirectPath ログイン完了後に戻ってくるアプリ内のパス (デフォルトは '/')
      */
-    login(redirectPath: string = '/'): void {
+    login(redirectPath: string = '/auth/callback'): void {
         console.log('[AuthService] ログイン処理を開始します...');
+        if (typeof window === 'undefined') {
+            console.warn('[AuthService] window が無いためログインリダイレクトをスキップしました (SSR)。');
+            return;
+        }
 
-        // ログイン用のAPIエンドポイント（ブラウザが直接遷移する）
-        // リダイレクト先として、アプリのフロントエンドURLを指定する場合もありますが、
-        // ここではBFFが良しなに処理する前提、あるいはパラメータで渡す想定の例です。
-        // 例: /api/auth/login?redirect_url=http://localhost:4200/
         const redirectUrl = `${window.location.origin}${redirectPath}`;
-        const loginEndpoint = `${environment.apiBaseUrl}/auth/login?redirect_uri=${encodeURIComponent(redirectUrl)}`;
+        const loginEndpoint = `${environment.apiBaseUrl}/v1/auth/login?redirect_uri=${encodeURIComponent(redirectUrl)}`;
 
-        // アプリ内ルーティングではなく、ブラウザレベルでの移動を行います
         window.location.href = loginEndpoint;
     }
 
@@ -58,7 +57,7 @@ export class AuthService {
      */
     logout(): void {
         console.log('[AuthService] ログアウトしています...');
-        this.api.post('/auth/logout', {}).subscribe({
+        this.api.post('/v1/auth/logout', {}).subscribe({
             next: () => {
                 console.log('[AuthService] ログアウト成功');
                 this.finalizeLogout();
@@ -91,7 +90,7 @@ export class AuthService {
         this.state.setLoading(true);
         console.log('[AuthService] ユーザー情報を取得中...');
 
-        return this.api.get<User>('/auth/me').pipe(
+        return this.api.get<User>('/v1/auth/me').pipe(
             tap((user) => {
                 console.log('[AuthService] ユーザー情報を取得しました:', user.id);
                 this.state.setCurrentUser(user);
@@ -124,20 +123,26 @@ export class AuthService {
      *   フロントエンドの /auth/callback などに戻ってきたときに呼び出します。
      * - ユーザー情報を取得しに行き、成功すれば状態を更新します。
      */
-    handleCallback(): Observable<void> {
-        console.log('[AuthService] コールバック処理を開始します (ユーザー情報取得)');
-        // fetchCurrentUser の結果を void に変換して返します
-        return this.fetchCurrentUser().pipe(
-            tap(() => {
-                // 必要ならここでホームページなどに移動させる処理を追加しても良いですが、
-                // 呼び出し元のコンポーネントで制御するほうが柔軟です。
+    handleCallback(): Observable<User> {
+        console.log('[AuthService] コールバック処理を開始します');
+        const params = new URLSearchParams(window.location.search);
+        const state = params.get('state');
+        const code = params.get('code');
+
+        if (!state || !code) {
+            const err = { status: 400, message: 'Missing state or code' } as any;
+            console.error('[AuthService] state / code が不足しています');
+            return throwError(() => err);
+        }
+
+        return this.api.get<User>('/v1/auth/callback', { params: { state, code } }).pipe(
+            tap((user) => {
+                this.state.setCurrentUser(user);
             }),
-            catchError((err) => {
-                console.error('[AuthService] コールバック後のユーザー取得に失敗:', err);
+            catchError((err: ApiError) => {
+                console.error('[AuthService] コールバック処理に失敗:', err);
                 return throwError(() => err);
-            }),
-            // map(() => void 0) // RxJSのバージョンによっては必要ですが、推論に任せます
-            tap(() => { }) as any // 型合わせのための簡易キャスト
+            })
         );
     }
 }
