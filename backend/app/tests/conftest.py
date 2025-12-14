@@ -22,6 +22,8 @@ def set_test_env():
     os.environ["OIDC_CLIENT_ID"] = "test-client-id"
     os.environ["OIDC_CLIENT_SECRET"] = "test-client-secret"
     os.environ["INITIAL_ADMIN_EMAIL"] = "admin@example.com"
+    os.environ["DEV_AUTH_ENABLED"] = "true"
+    os.environ["SESSION_SECRET"] = "test-session-secret"
     # Ensure DATABASE_URL is set if not already (though config.py has default)
     if "DATABASE_URL" not in os.environ:
          os.environ["DATABASE_URL"] = "postgresql+asyncpg://user:password@localhost:5432/test_db"

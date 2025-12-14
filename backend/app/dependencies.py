@@ -1,6 +1,11 @@
 from typing import Annotated, Optional
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
+import hmac
+import json
+import base64
+from hashlib import sha256
+from app.core.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db_session
@@ -20,6 +25,7 @@ from app.services.memory_service import MemoryService
 from app.services.chat_service import ChatService
 from app.services.feedback_service import FeedbackService
 from app.llm.mock_llm import MockLLMClient
+from fastapi.encoders import jsonable_encoder
 
 # テナントIDでフィルタリングされないシステムレベルのリポジトリ
 def get_system_tenant_repository(session: Annotated[AsyncSession, Depends(get_db_session)]) -> TenantRepository:
@@ -43,16 +49,76 @@ def get_auth_service(
 ) -> AuthService:
     return AuthService(user_repo, tenant_repo)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
+
+SESSION_COOKIE_NAME = "session"
+STATE_COOKIE_NAME = "auth_state"
+
+"""
+#　エラーとなったので、コメントアウトして別のものを作成
+def _sign_payload(payload: dict) -> str:
+    message = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode()
+    signature = hmac.new(settings.SESSION_SECRET.encode(), message.encode(), sha256).hexdigest()
+    return f"{message}.{signature}"
+"""
+def _sign_payload(payload: dict) -> str:
+    # UUID / datetime などを JSON で扱える形に正規化（ここが重要）
+    safe_payload = jsonable_encoder(payload)
+
+    # 署名の再現性を上げる（キー順固定・余計な空白なし）
+    message_json = json.dumps(safe_payload, separators=(",", ":"), sort_keys=True)
+
+    message = base64.urlsafe_b64encode(message_json.encode("utf-8")).decode("ascii")
+    signature = hmac.new(
+        settings.SESSION_SECRET.encode("utf-8"),
+        message.encode("ascii"),
+        sha256,
+    ).hexdigest()
+    return f"{message}.{signature}"
+
+
+def _verify_payload(token: str) -> dict:
+    try:
+        message, signature = token.rsplit(".", 1)
+    except ValueError:
+        raise ValueError("Malformed session token")
+    expected = hmac.new(settings.SESSION_SECRET.encode(), message.encode(), sha256).hexdigest()
+    if not hmac.compare_digest(signature, expected):
+        raise ValueError("Invalid session signature")
+    data = json.loads(base64.urlsafe_b64decode(message.encode()).decode())
+    return data
 
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
+    request: Request,
+    token: Annotated[Optional[str], Depends(oauth2_scheme)],
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> AuthenticatedUser:
     """
-    リクエストヘッダーからBearerトークンを抽出し、AuthServiceで検証してAuthenticatedUserを返します。
+    リクエストのCookieまたはBearerトークンからユーザーを復元します。
+    DEV_AUTH_ENABLED=true の場合はCookieセッションを優先し、未設定なら既存のBearer方式にフォールバックします。
     """
+    # Dev session cookie
+    if settings.DEV_AUTH_ENABLED:
+        raw_session = request.cookies.get(SESSION_COOKIE_NAME)
+        if raw_session:
+            try:
+                payload = _verify_payload(raw_session)
+                return AuthenticatedUser(**payload)
+            except Exception:
+                # セッション破損時は401で再ログインさせる
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid session",
+                )
+
+    # Bearer token flow (OIDC / future P1)
     try:
+        if not token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         user = await auth_service.verify_id_token(token)
         if not user.is_active:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
@@ -220,7 +286,6 @@ def get_feedback_service(
     FeedbackServiceの依存性注入を提供します。
     """
     return FeedbackService(feedback_repo)
-
 
 
 

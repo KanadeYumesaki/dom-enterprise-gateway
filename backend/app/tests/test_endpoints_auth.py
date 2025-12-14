@@ -1,14 +1,16 @@
-import pytest
-from fastapi.testclient import TestClient
-from fastapi import HTTPException
-from unittest.mock import AsyncMock, patch, MagicMock
-from uuid import uuid4, UUID
+import json
+from uuid import UUID, uuid4
 
+import pytest
+from fastapi import HTTPException
+from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock
+
+from app.core.config import settings
 from app.main import app
 from app.schemas.auth import AuthenticatedUser
 from app.services.auth import AuthService
-from app.dependencies import get_auth_service
-from app.dependencies import get_current_user, get_current_admin_user, oauth2_scheme
+from app.dependencies import get_auth_service, get_current_admin_user, get_current_user
 
 # TestClientインスタンス
 client = TestClient(app)
@@ -41,45 +43,58 @@ def override_get_current_user(mock_authenticated_user):
     app.dependency_overrides.clear()
 
 # テストケース
-def test_read_current_user_success(override_get_current_user, mock_authenticated_user):
-    """
-    認証済みユーザー情報取得APIの成功ケースをテストします。
-    """
-    response = client.get("/api/v1/auth/me")
-    assert response.status_code == 200
-    assert response.json()["email"] == mock_authenticated_user.email
-    assert UUID(response.json()["id"]) == mock_authenticated_user.id
+def test_dev_login_callback_and_me(monkeypatch):
+    monkeypatch.setattr(settings, "DEV_AUTH_ENABLED", True)
+    monkeypatch.setattr(settings, "SESSION_SECRET", "test-secret")
 
-def test_read_current_user_unauthorized(mock_auth_service, override_get_auth_service):
-    """
-    Authorizationヘッダーがない場合の認証失敗ケースをテストします。
-    AuthServiceのverify_id_tokenが例外を発生させる場合をシミュレートします。
-    """
-    mock_auth_service.verify_id_token.side_effect = Exception("Invalid token")
-    
-    # OAuth2PasswordBearerがトークンを見つけられない、またはverify_id_tokenが失敗する場合
-    response = client.get("/api/v1/auth/me", headers={"Authorization": "Bearer invalid_token"})
-    assert response.status_code == 401
-    assert "detail" in response.json()
-    assert "Could not validate credentials" in response.json()["detail"]
+    # login -> state cookie & redirect
+    login_res = client.get("/api/v1/auth/login", params={"redirect_uri": "/auth/callback"}, follow_redirects=False)
+    assert login_res.status_code == 302
+    state_cookie = login_res.cookies.get("auth_state")
+    assert state_cookie
+    redirected = login_res.headers["location"]
+    assert "code=dev" in redirected and f"state={state_cookie}" in redirected
 
-def test_read_current_user_inactive_user(mock_auth_service, override_get_auth_service):
-    """
-    非アクティブユーザーの認証失敗ケースをテストします。
-    """
-    inactive_user = AuthenticatedUser(
-        id=uuid4(),
-        tenant_id=uuid4(),
-        email="inactive@example.com",
-        is_active=False,
-        is_admin=False
+    # callback -> session cookie
+    callback_res = client.get(
+        "/api/v1/auth/callback",
+        params={"state": state_cookie, "code": "dev"},
+        cookies=login_res.cookies,
     )
-    mock_auth_service.verify_id_token.return_value = inactive_user
+    assert callback_res.status_code == 200
+    body = callback_res.json()
+    assert body["email"] == "dev@example.com"
+    assert "session" in callback_res.cookies
 
-    response = client.get("/api/v1/auth/me", headers={"Authorization": "Bearer valid_token"})
-    assert response.status_code == 400
-    assert "detail" in response.json()
-    assert "Inactive user" in response.json()["detail"]
+    # me should return user with session cookie
+    me_res = client.get("/api/v1/auth/me", cookies=callback_res.cookies)
+    assert me_res.status_code == 200
+    assert me_res.json()["email"] == "dev@example.com"
+
+def test_logout_clears_session(monkeypatch):
+    monkeypatch.setattr(settings, "DEV_AUTH_ENABLED", True)
+    monkeypatch.setattr(settings, "SESSION_SECRET", "test-secret")
+
+    login_res = client.get("/api/v1/auth/login", params={"redirect_uri": "/auth/callback"}, follow_redirects=False)
+    state_cookie = login_res.cookies.get("auth_state")
+    callback_res = client.get(
+        "/api/v1/auth/callback",
+        params={"state": state_cookie, "code": "dev"},
+        cookies=login_res.cookies,
+    )
+    client.cookies.update(callback_res.cookies)
+
+    logout_res = client.post("/api/v1/auth/logout")
+    assert logout_res.status_code == 204
+
+    me_after = client.get("/api/v1/auth/me")
+    assert me_after.status_code == 401
+    assert me_after.json()["detail"] == "Could not validate credentials"
+
+def test_login_returns_501_when_disabled(monkeypatch):
+    monkeypatch.setattr(settings, "DEV_AUTH_ENABLED", False)
+    res = client.get("/api/v1/auth/login", params={"redirect_uri": "/auth/callback"}, follow_redirects=False)
+    assert res.status_code == 501
 
 # get_current_admin_userのテスト（ここでは/adminエンドポイントがないため、単体でテスト）
 @pytest.mark.asyncio

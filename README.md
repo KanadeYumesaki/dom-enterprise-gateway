@@ -8,9 +8,9 @@ P0 では「コアチャット」を中心に、以下を実現します。
 - RAG（pgvector）＋長期メモリ＋フィードバック
 - Angular 20 + Zoneless + SSR + Material Design 3 による Web UI
 
-> ⚠️ 現在（2025-12 時点）、OIDC プロバイダを起動していない環境では  
-> `/login` から先の画面に遷移できないため、  
-> **Settings / Help など MainLayout 配下の UI は「実装済みだがブラウザ上の最終動作は未確認」**です。
+> ⚠️ OIDC をまだ用意していない環境向けに **Dev 認証 (P0.1)** を追加しました。  
+> `DEV_AUTH_ENABLED=true` のときだけ `/api/v1/auth/login` → `/api/v1/auth/callback` で
+> ダミーユーザーの Cookie セッションを発行します（本番では必ず false にしてください）。
 
 ---
 
@@ -118,6 +118,9 @@ dom-enterprise-gateway/
 cd ~/work/dom-enterprise-gateway
 cp .env.example .env   # 必要に応じて中身を編集
 ```
+
+- Dev 認証を使う場合: `DEV_AUTH_ENABLED=true` と `SESSION_SECRET=<任意の長いランダム文字列>` を設定。  
+  本番では必ず `DEV_AUTH_ENABLED=false` のままにしてください。
 ```bash
 # WSL (Ubuntu) 上で
 cd ~/work/dom-enterprise-gateway/backend
