@@ -27,23 +27,23 @@ Enterprise向けの **ガバナンス付き LLM ゲートウェイ**の PoC（P0
 
 ```mermaid
 flowchart LR
-  U[User Browser] -->|HTTP :80| N[Nginx]
-  N -->|/ (SSR)| F[Frontend (Angular SSR)]
-  N -->|/api → /api/v1/*| B[Backend (FastAPI)]
+    U["User Browser"] -->|"HTTP :80"| N["Nginx"]
+    N -->|"/ (SSR)"| F["Frontend (Angular SSR)"]
+    N -->|"/api → /api/v1/*"| B["Backend (FastAPI)"]
 
-  B -->|SQLAlchemy| P[(PostgreSQL + pgvector)]
-  B -->|cache / queues| R[(Redis)]
+    B -->|"SQLAlchemy"| P[("PostgreSQL + pgvector")]
+    B -->|"cache / queues"| R[("Redis")]
 
-  B -->|LLM calls| L[(LLM Provider)]
-  B -->|RAG| P
+    B -->|"LLM calls"| L[("LLM Provider")]
+    B -->|"RAG"| P
 
-  subgraph Containers (docker compose)
-    N
-    F
-    B
-    P
-    R
-  end
+    subgraph "Containers (docker compose)"
+        N
+        F
+        B
+        P
+        R
+    end
 ```
 
 ### 2.2 代表的なリクエストフロー
