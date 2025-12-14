@@ -8,7 +8,7 @@ from app.schemas.auth import AuthenticatedUser
 from app.schemas.user_settings import UserSettingsRead, UserSettingsUpdate
 from app.services.user_settings import UserSettingsService
 
-router = APIRouter(prefix="/api/user", tags=["user_settings"])
+router = APIRouter(prefix="/user", tags=["user_settings"])
 
 @router.get("/settings", response_model=UserSettingsRead, summary="ユーザー設定取得")
 async def get_user_settings(

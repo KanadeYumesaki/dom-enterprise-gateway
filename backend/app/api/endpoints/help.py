@@ -6,7 +6,7 @@ from app.schemas.auth import AuthenticatedUser
 from app.schemas.help import HelpSection
 from app.services.help import HelpService, get_help_service
 
-router = APIRouter(prefix="/api/help", tags=["help"])
+router = APIRouter(prefix="/help", tags=["help"])
 
 @router.get("/content", response_model=list[HelpSection] | HelpSection, summary="ヘルプコンテンツ取得")
 async def get_help_content(

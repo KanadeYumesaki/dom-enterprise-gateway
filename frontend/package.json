@@ -9,7 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "dev:ssr": "ng run frontend:serve-ssr",
-    "build:ssr": "ng build && ng run frontend:server",
+    "build:ssr": "ng build",
     "serve:ssr": "node dist/frontend/server/server.mjs"
   },
   "prettier": {

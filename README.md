@@ -118,20 +118,6 @@ dom-enterprise-gateway/
 cd ~/work/dom-enterprise-gateway
 cp .env.example .env   # 必要に応じて中身を編集
 ```
-
-最低限、以下の値を設定します（PoC 用にダミーでも可）。
-
-* `OIDC_CLIENT_ID`
-* `OIDC_CLIENT_SECRET`
-* `INITIAL_ADMIN_EMAIL`
-* その他、DB 接続文字列や Redis の設定などは `.env.example` を参照
-
----
-
-## 5. Backend のセットアップと起動
-
-### 5.1 依存関係のインストール
-
 ```bash
 # WSL (Ubuntu) 上で
 cd ~/work/dom-enterprise-gateway/backend

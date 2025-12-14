@@ -8,20 +8,18 @@ from app.repositories.tenant import TenantRepository
 from app.repositories.user import UserRepository
 from app.repositories.chat import ChatSessionRepository, ChatMessageRepository
 from app.repositories.knowledge import KnowledgeDocumentRepository
-from app.repositories.memory import StructuredMemoryRepository, EpisodicMemoryRepository # New import
-from app.repositories.feedback import FeedbackRepository # New import
-# from app.dependencies import get_current_user # Removed circular import
+from app.repositories.memory import StructuredMemoryRepository, EpisodicMemoryRepository
+from app.repositories.feedback import FeedbackRepository
 from app.schemas.auth import AuthenticatedUser
-from app.schemas.auth import AuthenticatedUser
-from app.services.auth import AuthService # Import AuthService for dependency function
-from app.services.dom_orchestrator import DomOrchestratorService # New import
-from app.services.answer_composer import AnswerComposerService # New import
-from app.services.rag_service import RagService # New import
-from app.services.file_service import FileService # New import
-from app.services.memory_service import MemoryService # New import
-from app.services.chat_service import ChatService # New import
-from app.services.feedback_service import FeedbackService # New import
-from app.llm.mock_llm import MockLLMClient # New import
+from app.services.auth import AuthService
+from app.services.dom_orchestrator import DomOrchestratorService
+from app.services.answer_composer import AnswerComposerService
+from app.services.rag_service import RagService
+from app.services.file_service import FileService
+from app.services.memory_service import MemoryService
+from app.services.chat_service import ChatService
+from app.services.feedback_service import FeedbackService
+from app.llm.mock_llm import MockLLMClient
 
 # テナントIDでフィルタリングされないシステムレベルのリポジトリ
 def get_system_tenant_repository(session: Annotated[AsyncSession, Depends(get_db_session)]) -> TenantRepository:
