@@ -1,172 +1,254 @@
-# DOM Enterprise Gateway (PoC) – P0 Core Chat
+# DOM Enterprise Gateway
 
-DOM Enterprise Gateway は、エンタープライズ向けの **ガバナンス付き LLM ゲートウェイ** を検証するための PoC（Proof of Concept）です。
+Enterprise向けの **ガバナンス付き LLM ゲートウェイ**の PoC（P0 Core Chat）です。
 
-P0/P0.1 では **「ログイン → チャット → 設定/ヘルプ」** までを、WSL2 上の Docker Compose で一気通貫に動かせる状態にします。
+* Backend: **FastAPI + LangChain v1 + PostgreSQL(pgvector) + Redis**
+* Frontend: **Angular 20 (standalone) + Signals + Zoneless + SSR + Angular Material (MD3)**
+* PoC機能: マルチエージェント（DOM / Helper / Research / Answer）、長期メモリ、RAG、フィードバック、管理者向けナレッジ閲覧、設定/ヘルプ
 
----
-
-## 1. 目的（P0 / P0.1）
-
-- Docker Compose で **Backend / Frontend(SSR) / Postgres / Redis / Nginx** を統合起動できる
-- Nginx で **`/api` → backend** / **`/` → frontend** をリバースプロキシ（アプリ側の CORS/Proxy 変更は最小）
-- **P0.1: Dev 認証** により、IdP（OIDC）なしでも PoC を操作できる
-- 既存テストを実行できる（**Backend pytest / Frontend unit test は必須**）
+> 開発は **Windows + WSL2 (Ubuntu)** 前提です。`npm` / `ng` / `poetry` / `docker` などのCLIは **WSL2 側で実行**してください。
 
 ---
 
-## 2. アーキテクチャ（PoC）
+## 1. 一次ソース（仕様の基準）
 
-- **nginx**: `http://localhost/` を入口にしてルーティング
-  - `/api/*` → backend
-  - `/*` → frontend (Angular SSR)
-- **backend**: FastAPI
-- **frontend**: Angular (SSR)
-- **postgres**: アプリデータ（チャット/設定など）
-- **redis**: キャッシュ/キュー用途
+迷ったらまずここに立ち返ります。
 
----
-
-## 3. 前提（WSL2）
-
-- Windows + WSL2
-- Docker Desktop（WSL2 integration 有効）
-- `docker compose` が WSL 内で実行できること
-
-ローカルでテストも回す場合：
-
-- Python 3.12+
-- Poetry
-- Node.js（フロントのユニットテスト用）
-
-> `poetry install` で `python` が見つからない場合：
-> Ubuntu では `python` コマンドが無いことがあるため、`sudo apt-get update && sudo apt-get install -y python-is-python3` を入れると解決します。
+* `requirements_p0_core_chat.md`（P0 の FR / NFR）
+* `DOM Enterprise Gateway.txt`（全体サマリ / Project Memory 対応）
+* `design.md`（アーキテクチャ / 図 / シーケンス）
+* `.kiro/tasks.md`（実装タスク）
 
 ---
 
-## 4. 起動方法（Docker Compose / WSL2）
+## 2. アーキテクチャ
 
-```bash
-cd ~/work/dom-enterprise-gateway
+### 2.1 全体構成
 
-# 初回 or 変更後
-docker compose up --build -d
+```mermaid
+flowchart LR
+  U[User Browser] -->|HTTP :80| N[Nginx]
+  N -->|/ -> SSR| F[Frontend (Angular SSR)]
+  N -->|/api -> /api/v1/*| B[Backend (FastAPI)]
 
-# ログ確認
-docker compose logs -f nginx backend frontend
-````
+  B -->|SQLAlchemy| P[(PostgreSQL + pgvector)]
+  B -->|cache / queues| R[(Redis)]
 
-ブラウザでアクセス：
+  B -->|LLM calls| L[(LLM Provider)]
+  B -->|RAG| P
 
-- `http://localhost/`
+  subgraph Containers (docker compose)
+    N
+    F
+    B
+    P
+    R
+  end
+```
 
----
+### 2.2 代表的なリクエストフロー
 
-## 5. P0.1 Dev 認証（最小コストで PoC を操作するための入口）
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Browser
+  participant Nginx
+  participant Frontend
+  participant Backend
+  participant Postgres
 
-### 5.1 何をしているか
+  Browser->>Nginx: GET /login
+  Nginx->>Frontend: SSR /login
+  Frontend-->>Browser: HTML
 
-- `DEV_AUTH_ENABLED=true` のときだけ Dev 認証フローが有効になります。
-- `/api/v1/auth/login` → `/api/v1/auth/callback` で **ダミーユーザーの Cookie セッション**を発行します。
-- フロントは **Cookie を送るために `withCredentials: true`** で API を呼びます（同一 origin のため基本そのまま動きます）。
+  Browser->>Frontend: click Login
+  Frontend->>Nginx: GET /api/v1/auth/login?redirect_uri=...
+  Nginx->>Backend: /api/v1/auth/login
+  Backend-->>Browser: 302 redirect + auth_state cookie
 
-> ⚠️ **本番では必ず `DEV_AUTH_ENABLED=false`** にしてください。
+  Browser->>Nginx: GET /api/v1/auth/callback?state=...&code=...
+  Nginx->>Backend: /api/v1/auth/callback
+  Backend->>Postgres: (DEV時) user/tenant upsert
+  Backend-->>Browser: 200 user json + session cookie
 
-### 5.2 必要な環境変数（docker compose 側で設定）
-
-- `DEV_AUTH_ENABLED=true`
-- `SESSION_SECRET=...`（十分長いランダム文字列を推奨）
-
-#### DB について（PoC 用）
-
-- マイグレーションを省略して最短で動かすため、PoC では `AUTO_CREATE_DB=true` を使う場合があります。
-- `AUTO_CREATE_DB=true` のとき、起動時に **テーブルが無ければ自動作成**します。
-
-> ⚠️ **本番では `AUTO_CREATE_DB=false`**（DDL は Alembic 等で管理）
-
-### 5.3 動作確認（curl）
-
-> ブラウザでログインした後に確認するのが簡単です。
-
-```bash
-# ログイン後（ブラウザで Cookie を持っている状態）
-# /api/v1/auth/me が 200 で user json を返す
-curl -i http://localhost/api/v1/auth/me
+  Browser->>Nginx: GET /api/v1/chat/sessions (with cookie)
+  Nginx->>Backend: /api/v1/chat/sessions
+  Backend->>Postgres: session list
+  Backend-->>Browser: 200 sessions
 ```
 
 ---
 
-## 6. テスト（P0/P0.1 では必須）
+## 3. リポジトリ構成（主要）
 
-### 6.1 Backend（pytest）
+```
+.
+├── backend/          # FastAPI / LangChain / DB
+├── frontend/         # Angular SSR (Zoneless)
+├── nginx/            # reverse proxy (docker)
+├── docs/             # E2Eシナリオ / リグレッション等
+└── docker-compose.yml
+```
+
+---
+
+## 4. 開発環境（WSL2）
+
+* OS: Windows 11
+* 実行環境: **WSL2 (Ubuntu)**
+* 作業ディレクトリ例: `~/work/dom-enterprise-gateway`
+
+> npm / node / ng / poetry は **WSL2 側に入っているもの**を使ってください。
+
+---
+
+## 5. 起動方法（Docker Compose / P0.1）
+
+### 5.1 起動
+
+```bash
+# WSL2
+cd ~/work/dom-enterprise-gateway
+docker compose up --build -d
+```
+
+* ブラウザ: `http://localhost/`
+* Nginx: `http://localhost/`（80）
+* Backend: Nginx 経由で `http://localhost/api/v1/...`
+
+### 5.2 Dev認証（P0.1）
+
+P0.1 では「**最小コストで操作できるPoC**」のため、IdPなしの **Dev 認証**を用意しています。
+
+* `DEV_AUTH_ENABLED=true` のときのみ有効
+* `/api/v1/auth/login -> /api/v1/auth/callback` で **HttpOnly cookie セッション**を発行
+
+> 本番運用では必ず `DEV_AUTH_ENABLED=false` にしてください。
+
+### 5.3 DB 自動作成（P0.1）
+
+PoC用途で、テーブル未生成による 500 を避けるためのオプションがあります。
+
+* `AUTO_CREATE_DB=true` のとき、起動時に `Base.metadata.create_all()` でテーブルを自動作成します。
+
+> 本番は Alembic マイグレーションで管理してください（自動DDLはOFF推奨）。
+
+---
+
+## 6. テスト（WSL2）
+
+### 6.1 Backend
 
 ```bash
 cd ~/work/dom-enterprise-gateway/backend
-
-# venv が壊れていそうなら一度消す
-rm -rf .venv
-
 poetry install
 poetry run pytest
 ```
 
-> `Permission denied: pip` が出る場合は、過去に root で `.venv` を作ってしまっている可能性が高いので、`.venv` を消して作り直してください。
-
-### 6.2 Frontend（Unit Test / Headless）
+### 6.2 Frontend
 
 ```bash
 cd ~/work/dom-enterprise-gateway/frontend
-
 npm ci
+npm test -- --watch=false
+```
+
+#### Chrome/Chromium が無い場合
+
+`ng test`（Karma / ChromeHeadless）が起動できない場合、WSL2 にブラウザ実体を入れる必要があります。
+
+例:
+
+```bash
+# WSL2（環境により chromium / chromium-browser / google-chrome のいずれかが入ります）
+which chromium || which chromium-browser || which google-chrome || true
+
+# ない場合は導入（ディストリにより方法が異なります）
+# sudo apt update && sudo apt install -y chromium
+
+# 必要なら、CHROME_BIN を明示
+export CHROME_BIN="$(which chromium || which chromium-browser || which google-chrome)"
+
 npm test -- --watch=false --browsers=ChromeHeadless
 ```
 
-> WSL に Chrome/Chromium が無い場合は、まず Chromium を入れてください。
-> 例: `sudo apt-get update && sudo apt-get install -y chromium-browser`（環境によりパッケージ名が違う場合あり）
+---
+
+## 7. 主要エンドポイント（抜粋）
+
+* Auth
+
+  * `GET /api/v1/auth/login?redirect_uri=...`
+  * `GET /api/v1/auth/callback?state=...&code=...`
+  * `POST /api/v1/auth/logout`
+  * `GET /api/v1/auth/me`
+* Chat
+
+  * `GET /api/v1/chat/sessions`
+  * `POST /api/v1/chat/messages`
+  * `GET /api/v1/chat/stream`（SSE）
+* Knowledge（Admin）
+
+  * `GET /api/v1/admin/knowledge`
+* Settings / Help
+
+  * `GET /api/v1/user/settings`
+  * `POST /api/v1/user/settings`
+  * `GET /api/v1/help/content`
 
 ---
 
-## 7. よくあるトラブルシュート
+## 8. トラブルシューティング
 
-### 7.1 401（Unauthorized）が出る / Dev セッションが効かない
+### 8.1 401 が出る（Dev認証なのに）
 
-- フロントから API へ **Cookie が送られていない**可能性があります。
+* ブラウザの cookie が API に送られているか確認してください。
+* Angular 側の HttpClient が `withCredentials: true` になっていないと cookie が送られません。
 
-  - `withCredentials: true` が API 呼び出しに付いているか
-  - `http://localhost`（同一 origin）でアクセスしているか
+### 8.2 404 Not Found（/api が絡む）
 
-### 7.2 404（Not Found）で `/api/api/...` のようになっている
+* Nginx の `/api -> backend` ルーティングと、Frontend の API base path が一致しているか確認してください。
+* `/api/api/...` のような二重パスになっている場合は、Frontend の base path と ApiService のパス組み立てを見直してください。
 
-- `apiBaseUrl` と API パス組み立ての二重付与が原因です。
+### 8.3 500 ResponseValidationError（datetime / updated_at）
 
-  - **API は `/api/v1` に統一**し、`/api` を二重に付けないようにしてください。
-
-### 7.3 500（Internal Server Error）
-
-- backend ログ（`docker compose logs -f backend`）のスタックトレースを確認してください。
-- PoC では DB テーブル未作成・DB 初期データ不足が原因になりやすいです。
+* DB の `updated_at` が NULL のまま返ると、レスポンススキーマが strict な場合に 500 になり得ます。
+* PoCでは `AUTO_CREATE_DB=true` の起動時処理で補正する運用にしています。
 
 ---
 
-## 8. ロードマップ
+## 9. ロードマップ
 
-- **P0**: Docker Compose で統合起動 / 主要 API が動く / 回帰テストが回る
-- **P0.1**: Dev 認証で「操作できる PoC」を成立させる（IdP なし）
-- **P1**: **BFF + OIDC** 本実装（例: Keycloak）へ差し替え
+### P0（Core Chat）
 
----
+* Frontend 基盤（Angular SSR + Zoneless + Material MD3）
+* 認証（BFF前提の入口）
+* チャット UI（ストリーミング / 添付 / IC-5 Lite 表示）
+* ナレッジ管理（管理者向け一覧・検索・詳細）
+* Settings / Help（API連携 + UI）
 
-## 9. セキュリティ注意
+### P0.1（操作できるPoC）
 
-- Dev 認証は PoC を素早く触るための仕組みです。
-- 本番相当環境では必ず以下を守ってください：
+* Docker Compose で統合起動（Nginx / Frontend SSR / Backend / Postgres / Redis）
+* Dev 認証（IdPなし、cookie セッション）
+* PoC向け DB 自動作成（AUTO_CREATE_DB）
 
-  - `DEV_AUTH_ENABLED=false`
-  - `SESSION_SECRET` は十分長くランダム
-  - DB 変更はマイグレーションで管理（`AUTO_CREATE_DB=false`）
+### P1
+
+* **Auth本実装（BFF + OIDC / IdP: Keycloak 等）**
+* Knowledge 管理の CRUD 拡張（アップロード / 削除 / 編集）
+* ファイル内容プレビュー（特に PDF / Markdown）
+* Settings/Help UI の UX 向上と Onboarding ツアーの多ステップ化
+* RAG / Agentic Research の高度化
+
+### P2 以降
+
+* ガバナンスダッシュボード（フィードバック / ポリシー違反検知 / モデルルーティング）
+* Explainability / トレースビュー
+* 本番運用を想定した監査ログ・多テナント管理 UI など
 
 ---
 
 ## 10. ライセンス
 
-未確定（PoC / 社内検証用途）。
+TBD
