@@ -38,7 +38,8 @@ import { HelpSection } from '../models/help.models';
 })
 export class ApiService {
     private http = inject(HttpClient);
-    private baseUrl = environment.apiBaseUrl;
+    /** Nginx で /api を backend にリバースプロキシ、FastAPI は /api/v1 プレフィックス */
+    private apiRoot = `${environment.apiBaseUrl}/v1`;
 
     constructor() { }
 
@@ -61,7 +62,8 @@ export class ApiService {
         headers?: HttpHeaders | { [header: string]: string | string[] };
         params?: HttpParams | { [param: string]: string | number | boolean | readonly (string | number | boolean)[] };
     }): Observable<T> {
-        return this.http.get<T>(`${this.baseUrl}${path}`, options)
+        const opts = { withCredentials: true, ...options };
+        return this.http.get<T>(`${this.apiRoot}${path}`, opts)
             .pipe(catchError((err) => this.handleError(err, path)));
     }
 
@@ -81,7 +83,8 @@ export class ApiService {
         headers?: HttpHeaders | { [header: string]: string | string[] };
         params?: HttpParams | { [param: string]: string | number | boolean | readonly (string | number | boolean)[] };
     }): Observable<T> {
-        return this.http.post<T>(`${this.baseUrl}${path}`, body, options)
+        const opts = { withCredentials: true, ...options };
+        return this.http.post<T>(`${this.apiRoot}${path}`, body, opts)
             .pipe(catchError((err) => this.handleError(err, path)));
     }
 
@@ -100,7 +103,8 @@ export class ApiService {
     put<T>(path: string, body: unknown, options?: {
         headers?: HttpHeaders | { [header: string]: string | string[] };
     }): Observable<T> {
-        return this.http.put<T>(`${this.baseUrl}${path}`, body, options)
+        const opts = { withCredentials: true, ...options };
+        return this.http.put<T>(`${this.apiRoot}${path}`, body, opts)
             .pipe(catchError((err) => this.handleError(err, path)));
     }
 
@@ -118,7 +122,8 @@ export class ApiService {
     delete<T>(path: string, options?: {
         headers?: HttpHeaders | { [header: string]: string | string[] };
     }): Observable<T> {
-        return this.http.delete<T>(`${this.baseUrl}${path}`, options)
+        const opts = { withCredentials: true, ...options };
+        return this.http.delete<T>(`${this.apiRoot}${path}`, opts)
             .pipe(catchError((err) => this.handleError(err, path)));
     }
 
@@ -145,7 +150,7 @@ export class ApiService {
      */
     sendChatMessage(request: ChatMessageRequest): Promise<ChatMessage> {
         return firstValueFrom(
-            this.post<ChatMessage>('/api/chat/send', request)
+            this.post<ChatMessage>('/chat/send', request)
         );
     }
 
@@ -177,7 +182,7 @@ export class ApiService {
         onError: (error: ChatError) => void
     ): EventSource {
         const params = new HttpParams().set('research_mode', researchMode.toString());
-        const url = `${this.baseUrl}/api/chat/stream/${sessionId}?${params.toString()}`;
+        const url = `${this.apiRoot}/chat/stream/${sessionId}?${params.toString()}`;
 
         const eventSource = new EventSource(url, { withCredentials: true });
 
@@ -233,7 +238,7 @@ export class ApiService {
      */
     resetChatSession(sessionId: string): Promise<ChatSession> {
         return firstValueFrom(
-            this.post<ChatSession>(`/api/chat/reset/${sessionId}`, {})
+            this.post<ChatSession>(`/chat/reset/${sessionId}`, {})
         );
     }
 
@@ -255,7 +260,7 @@ export class ApiService {
      */
     createChatSession(title?: string): Promise<ChatSession> {
         return firstValueFrom(
-            this.post<ChatSession>('/api/chat/sessions', { title })
+            this.post<ChatSession>('/chat/sessions', { title })
         );
     }
 
@@ -275,7 +280,7 @@ export class ApiService {
      */
     getChatSessions(): Promise<ChatSession[]> {
         return firstValueFrom(
-            this.get<ChatSession[]>('/api/chat/sessions')
+            this.get<ChatSession[]>('/chat/sessions')
         );
     }
 
@@ -317,7 +322,7 @@ export class ApiService {
         }
 
         return firstValueFrom(
-            this.post<FileUploadResponse>('/api/files/upload', formData, {
+            this.post<FileUploadResponse>('/files/upload', formData, {
                 params: params as any
             })
         );
@@ -358,7 +363,7 @@ export class ApiService {
             }
 
             const response = await firstValueFrom(
-                this.get<any[]>('/api/admin/knowledge', { params })
+                this.get<any[]>('/admin/knowledge', { params })
             );
 
             // Backend の snake_case を Frontend の camelCase に変換
@@ -438,7 +443,7 @@ export class ApiService {
     async getUserSettings(): Promise<UserSettings> {
         try {
             const response = await firstValueFrom(
-                this.get<any>('/api/user/settings')
+                this.get<any>('/user/settings')
             );
 
             // Backend の snake_case を Frontend の camelCase に変換
@@ -489,7 +494,7 @@ export class ApiService {
             if (settings.onboardingSkipped !== undefined) payload.onboarding_skipped = settings.onboardingSkipped;
 
             const response = await firstValueFrom(
-                this.post<any>('/api/user/settings', payload)
+                this.post<any>('/user/settings', payload)
             );
 
             // Backend の snake_case を Frontend の camelCase に変換
@@ -542,7 +547,7 @@ export class ApiService {
             params = params.set('category', category);
 
             return await firstValueFrom(
-                this.get<HelpSection[] | HelpSection>('/api/help/content', { params })
+                this.get<HelpSection[] | HelpSection>('/help/content', { params })
             );
         } catch (error: unknown) {
             throw error;

@@ -19,7 +19,7 @@ class ChatSession(Base):
     title = Column(String, nullable=True) # セッションのタイトル
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), default=func.now(), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     user = relationship("User", back_populates="chat_sessions")
     tenant = relationship("Tenant", back_populates="chat_sessions")
@@ -39,7 +39,7 @@ class ChatMessage(Base):
     content = Column(Text, nullable=False)
     raw_llm_response = Column(JSON, nullable=True) # LLMからの生の応答（JSON形式）
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), default=func.now(), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     session = relationship("ChatSession", back_populates="messages")
 

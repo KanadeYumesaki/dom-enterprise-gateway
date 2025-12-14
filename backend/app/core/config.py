@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     DEV_AUTH_ENABLED: bool = False
     SESSION_SECRET: str = "change-me-session-secret"
 
+    # --- Dev DB bootstrap (P0.1 only) ---
+    AUTO_CREATE_DB: bool = False
+
     # --- 認証 / OIDC 設定 ---
     # ここも、本番では環境変数で上書きされる前提。
     # テストやローカル開発ではこのダミー値が使われます。

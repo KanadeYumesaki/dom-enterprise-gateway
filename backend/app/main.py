@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+import logging
+
+from app.core.database import auto_create_tables, backfill_dev_timestamps
 
 from app.api.endpoints import admin, auth, chat, feedback, files, help, user_settings
 from app.core.config import settings  # 設定をインポート
@@ -24,3 +27,10 @@ app.include_router(help.router, prefix=settings.API_V1_STR, tags=["help"])
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the DOM Enterprise Gateway"}
+
+
+@app.on_event("startup")
+async def on_startup():
+    # Dev only: create tables when enabled
+    await auto_create_tables()
+    await backfill_dev_timestamps()

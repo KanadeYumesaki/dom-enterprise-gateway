@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError, of } from 'rxjs';
 import { ApiService } from './api.service';
@@ -22,6 +23,7 @@ export class AuthService {
     private api = inject(ApiService);
     private state = inject(StateService);
     private router = inject(Router);
+    private platformId = inject(PLATFORM_ID);
 
     constructor() { }
 
@@ -41,10 +43,15 @@ export class AuthService {
             return;
         }
 
-        const redirectUrl = `${window.location.origin}${redirectPath}`;
-        const loginEndpoint = `${environment.apiBaseUrl}/v1/auth/login?redirect_uri=${encodeURIComponent(redirectUrl)}`;
-
+        const safeRedirectPath = redirectPath.startsWith('/') ? redirectPath : `/${redirectPath}`;
+        const loginEndpoint =
+            `${environment.apiBaseUrl}/v1/auth/login?redirect_uri=${encodeURIComponent(safeRedirectPath)}`;
+        console.log('[AuthService] ログインエンドポイント:', loginEndpoint);
         window.location.href = loginEndpoint;
+
+        // コメントアウト（0.1バージョン）
+        //const redirectUrl = `${window.location.origin}${redirectPath}`;
+        //const loginEndpoint = `${environment.apiBaseUrl}/v1/auth/login?redirect_uri=${encodeURIComponent(redirectUrl)}`;
     }
 
     /**
@@ -57,7 +64,7 @@ export class AuthService {
      */
     logout(): void {
         console.log('[AuthService] ログアウトしています...');
-        this.api.post('/v1/auth/logout', {}).subscribe({
+        this.api.post('/auth/logout', {}).subscribe({
             next: () => {
                 console.log('[AuthService] ログアウト成功');
                 this.finalizeLogout();
@@ -90,7 +97,7 @@ export class AuthService {
         this.state.setLoading(true);
         console.log('[AuthService] ユーザー情報を取得中...');
 
-        return this.api.get<User>('/v1/auth/me').pipe(
+        return this.api.get<User>('/auth/me').pipe(
             tap((user) => {
                 console.log('[AuthService] ユーザー情報を取得しました:', user.id);
                 this.state.setCurrentUser(user);
@@ -125,6 +132,10 @@ export class AuthService {
      */
     handleCallback(): Observable<User> {
         console.log('[AuthService] コールバック処理を開始します');
+        if (!isPlatformBrowser(this.platformId)) {
+            const err = { status: 0, message: 'Callback called on server' } as any;
+            return throwError(() => err);
+        }
         const params = new URLSearchParams(window.location.search);
         const state = params.get('state');
         const code = params.get('code');
@@ -135,7 +146,7 @@ export class AuthService {
             return throwError(() => err);
         }
 
-        return this.api.get<User>('/v1/auth/callback', { params: { state, code } }).pipe(
+        return this.api.get<User>('/auth/callback', { params: { state, code } }).pipe(
             tap((user) => {
                 this.state.setCurrentUser(user);
             }),

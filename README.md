@@ -1,349 +1,341 @@
-# DOM Enterprise Gateway – P0 Core Chat
+# DOM Enterprise Gateway (PoC) – P0 Core Chat
 
-DOM Enterprise Gateway は、エンタープライズ向けの **ガバナンス付き LLM ゲートウェイ** の PoC です。  
-P0 では「コアチャット」を中心に、以下を実現します。
+DOM Enterprise Gateway は、エンタープライズ向けの **ガバナンス付き LLM ゲートウェイ** を検証するための PoC（Proof of Concept）です。
 
-- OAuth2 / OIDC による認証・テナント分離・RBAC（`user` / `admin`）
-- マルチエージェント（DOM / Helper / Research / Answer）+ LangChain v1
-- RAG（pgvector）＋長期メモリ＋フィードバック
-- Angular 20 + Zoneless + SSR + Material Design 3 による Web UI
-
-> ⚠️ OIDC をまだ用意していない環境向けに **Dev 認証 (P0.1)** を追加しました。  
-> `DEV_AUTH_ENABLED=true` のときだけ `/api/v1/auth/login` → `/api/v1/auth/callback` で
-> ダミーユーザーの Cookie セッションを発行します（本番では必ず false にしてください）。
+P0/P0.1 では **「ログイン → チャット → 設定/ヘルプ」** までを、WSL2 上の Docker Compose で一気通貫に動かせる状態にします。
 
 ---
 
-## 1. 全体アーキテクチャ
+## 1. 目的（P0 / P0.1）
 
-### 1.1 コンポーネント構成
+- Docker Compose で **Backend / Frontend(SSR) / Postgres / Redis / Nginx** を統合起動できる
+- Nginx で **`/api` → backend** / **`/` → frontend** をリバースプロキシ（アプリ側の CORS/Proxy 変更は最小）
+- **P0.1: Dev 認証** により、IdP（OIDC）なしでも PoC を操作できる
+- 既存テストを実行できる（**Backend pytest / Frontend unit test は必須**）
 
-```mermaid
-flowchart LR
-  User["エンドユーザー<br/>(Webブラウザ)"] --> Frontend["Frontend<br/>Angular 20 / SSR / Material"]
-  Frontend -->|REST + SSE| Backend["Backend API<br/>FastAPI + LangChain v1"]
-  Backend --> DB[(PostgreSQL 15 + pgvector)]
-  Backend --> Cache[(Redis)]
-  Backend --> LLM["LLM Provider<br/>(Gemini シリーズ想定)"]
-  Backend --> IdP["IdP / OIDC Provider"]
+---
 
-  subgraph Infra
-    DB
-    Cache
-  end
+## 2. アーキテクチャ（PoC）
+
+- **nginx**: `http://localhost/` を入口にしてルーティング
+  - `/api/*` → backend
+  - `/*` → frontend (Angular SSR)
+- **backend**: FastAPI
+- **frontend**: Angular (SSR)
+- **postgres**: アプリデータ（チャット/設定など）
+- **redis**: キャッシュ/キュー用途
+
+---
+
+## 3. 前提（WSL2）
+
+- Windows + WSL2
+- Docker Desktop（WSL2 integration 有効）
+- `docker compose` が WSL 内で実行できること
+
+ローカルでテストも回す場合：
+
+- Python 3.12+
+- Poetry
+- Node.js（フロントのユニットテスト用）
+
+> `poetry install` で `python` が見つからない場合：
+> Ubuntu では `python` コマンドが無いことがあるため、`sudo apt-get update && sudo apt-get install -y python-is-python3` を入れると解決します。
+
+---
+
+## 4. 起動方法（Docker Compose / WSL2）
+
+```bash
+cd ~/work/dom-enterprise-gateway
+
+# 初回 or 変更後
+docker compose up --build -d
+
+# ログ確認
+docker compose logs -f nginx backend frontend
 ````
 
-### 1.2 主要機能（P0）
+ブラウザでアクセス：
 
-* 認証・認可 / RBAC / テナント分離
-* コアチャット（ストリーミング応答 / IC-5 ライト形式）
-* RAG + 長期メモリ（セッション要約・Structured/Episodic Memory）
-* ナレッジ管理（管理者用一覧・検索）
-* 設定（テーマ / 言語 / フォントサイズ / Onboarding フラグ）
-* ヘルプセンター（画面・機能の説明）
-* フィードバックとログ（品質改善のためのメトリクス蓄積）
-
-詳細な機能要件は `requirements_p0_core_chat.md` と
-「引き継ぎメモ / 要件フルサマリ」 (`DOM Enterprise Gateway.txt`) を参照してください。
+- `http://localhost/`
 
 ---
 
-## 2. リポジトリ構成
+## 5. P0.1 Dev 認証（最小コストで PoC を操作するための入口）
 
-```text
-dom-enterprise-gateway/
-├── backend/                # FastAPI + LangChain v1 バックエンド
-│   ├── app/
-│   │   ├── api/           # エンドポイント定義
-│   │   ├── models/        # SQLAlchemy モデル
-│   │   ├── repositories/  # Repository 層
-│   │   ├── services/      # ドメインサービス (ChatService 等)
-│   │   └── schemas/       # Pydantic スキーマ
-│   └── tests/             # バックエンド単体テスト
-├── frontend/               # Angular 20 (standalone + SSR + Zoneless)
-│   ├── src/app/
-│   │   ├── core/          # 共通サービス (Api/Auth/State/Onboarding など)
-│   │   ├── layout/        # MainLayout / Header / Sidebar
-│   │   ├── features/      # chat / knowledge / settings / help 等の機能別 UI
-│   │   └── pages/         # ルートに対応するページコンポーネント
-│   └── ...                # Angular 標準構成
-├── .kiro/                  # タスクリスト等のステアリング用メモ
-├── requirements_p0_core_chat.md
-├── DOM Enterprise Gateway.txt
-├── design.md
-├── help_content_outline.md
-├── tasks.md
-└── README.md               # このファイル
+### 5.1 何をしているか
+
+- `DEV_AUTH_ENABLED=true` のときだけ Dev 認証フローが有効になります。
+- `/api/v1/auth/login` → `/api/v1/auth/callback` で **ダミーユーザーの Cookie セッション**を発行します。
+- フロントは **Cookie を送るために `withCredentials: true`** で API を呼びます（同一 origin のため基本そのまま動きます）。
+
+> ⚠️ **本番では必ず `DEV_AUTH_ENABLED=false`** にしてください。
+
+### 5.2 必要な環境変数（docker compose 側で設定）
+
+- `DEV_AUTH_ENABLED=true`
+- `SESSION_SECRET=...`（十分長いランダム文字列を推奨）
+
+#### DB について（PoC 用）
+
+- マイグレーションを省略して最短で動かすため、PoC では `AUTO_CREATE_DB=true` を使う場合があります。
+- `AUTO_CREATE_DB=true` のとき、起動時に **テーブルが無ければ自動作成**します。
+
+> ⚠️ **本番では `AUTO_CREATE_DB=false`**（DDL は Alembic 等で管理）
+
+### 5.3 動作確認（curl）
+
+> ブラウザでログインした後に確認するのが簡単です。
+
+```bash
+# ログイン後（ブラウザで Cookie を持っている状態）
+# /api/v1/auth/me が 200 で user json を返す
+curl -i http://localhost/api/v1/auth/me
 ```
 
 ---
 
-## 3. 技術スタック
+## 6. テスト（P0/P0.1 では必須）
 
-### 3.1 Backend
-
-* Python 3.12
-* FastAPI
-* LangChain v1
-* SQLAlchemy + Alembic
-* PostgreSQL 15 + pgvector
-* Redis
-* Poetry によるパッケージ管理
-
-### 3.2 Frontend
-
-* Angular 20（standalone / Signals / Zoneless + SSR）
-* TypeScript 5.9
-* Angular Material (Material Design 3)
-* RxJS
-* Karma + Jasmine（ユニットテスト）
-
-### 3.3 インフラ / その他
-
-* Windows 11 + WSL2 (Ubuntu)
-* Docker / docker-compose（PostgreSQL / Redis 用）
-* OAuth2 / OIDC（企業 IdP 連携を想定）
-
-> 重要: `poetry`, `npm`, `ng`, `docker` など **すべての CLI は WSL2 上の Ubuntu で実行**してください。
-> Windows 側の PowerShell / CMD からは直接叩かない前提です。
-
----
-
-## 4. 初期セットアップ
-
-### 4.1 環境変数ファイルの作成
+### 6.1 Backend（pytest）
 
 ```bash
-# WSL (Ubuntu) 上で
-cd ~/work/dom-enterprise-gateway
-cp .env.example .env   # 必要に応じて中身を編集
-```
-
-- Dev 認証を使う場合: `DEV_AUTH_ENABLED=true` と `SESSION_SECRET=<任意の長いランダム文字列>` を設定。  
-  本番では必ず `DEV_AUTH_ENABLED=false` のままにしてください。
-```bash
-# WSL (Ubuntu) 上で
 cd ~/work/dom-enterprise-gateway/backend
 
-# Poetry で依存関係をインストール
+# venv が壊れていそうなら一度消す
+rm -rf .venv
+
 poetry install
-
-# （任意）仮想環境をプロジェクト直下に作る場合
-poetry config virtualenvs.in-project true
+poetry run pytest
 ```
 
-### 5.2 データベース起動（docker-compose）
+> `Permission denied: pip` が出る場合は、過去に root で `.venv` を作ってしまっている可能性が高いので、`.venv` を消して作り直してください。
+
+### 6.2 Frontend（Unit Test / Headless）
 
 ```bash
-# プロジェクトルートで
+cd ~/work/dom-enterprise-gateway/frontend
+
+npm ci
+npm test -- --watch=false --browsers=ChromeHeadless
+```
+
+> WSL に Chrome/Chromium が無い場合は、まず Chromium を入れてください。
+> 例: `sudo apt-get update && sudo apt-get install -y chromium-browser`（環境によりパッケージ名が違う場合あり）
+
+---
+
+## 7. よくあるトラブルシュート
+
+### 7.1 401（Unauthorized）が出る / Dev セッションが効かない
+
+- フロントから API へ **Cookie が送られていない**可能性があります。
+
+  - `withCredentials: true` が API 呼び出しに付いているか
+  - `http://localhost`（同一 origin）でアクセスしているか
+
+### 7.2 404（Not Found）で `/api/api/...` のようになっている
+
+- `apiBaseUrl` と API パス組み立ての二重付与が原因です。
+
+  - **API は `/api/v1` に統一**し、`/api` を二重に付けないようにしてください。
+
+### 7.3 500（Internal Server Error）
+
+- backend ログ（`docker compose logs -f backend`）のスタックトレースを確認してください。
+- PoC では DB テーブル未作成・DB 初期データ不足が原因になりやすいです。
+
+---
+
+## 8. ロードマップ
+
+- **P0**: Docker Compose で統合起動 / 主要 API が動く / 回帰テストが回る
+- **P0.1**: Dev 認証で「操作できる PoC」を成立させる（IdP なし）
+- **P1**: **BFF + OIDC** 本実装（例: Keycloak）へ差し替え
+
+---
+
+## 9. セキュリティ注意
+
+- Dev 認証は PoC を素早く触るための仕組みです。
+- 本番相当環境では必ず以下を守ってください：
+
+  - `DEV_AUTH_ENABLED=false`
+  - `SESSION_SECRET` は十分長くランダム
+  - DB 変更はマイグレーションで管理（`AUTO_CREATE_DB=false`）
+
+---
+
+## 10. ライセンス
+
+未確定（PoC / 社内検証用途）。
+
+````
+
+👆 **ここまで README.md**
+
+---
+
+## 2) README を反映して Git 登録するコマンド（そのままコピペ）
+
+> すでにエディタで README を貼り替えた前提です（貼り替えてから実行してください）。
+
+```bash
 cd ~/work/dom-enterprise-gateway
-docker compose up -d postgres redis
-```
 
-### 5.3 マイグレーション実行
+# 変更確認
+git status
 
-（実際のコマンドは `alembic.ini` / `Makefile` に合わせてください）
+git add -A
+
+# コミットメッセージは必要に応じて変更
+git commit -m "chore(p0.1): compose PoC + dev auth + ui/api fixes"
+
+# upstream が無い場合もこれで OK
+git push --set-upstream origin "$(git branch --show-current)"
+````
+
+---
+
+## 3) もし README をターミナルだけで置き換えたい場合（任意）
+
+> 下のコマンドは **README.md を完全に上書き**します。必要なら先にバックアップしてください。
+
+````bash
+cd ~/work/dom-enterprise-gateway
+cp -p README.md README.md.bak.$(date +%Y%m%d-%H%M%S) || true
+
+cat > README.md <<'EOF'
+# DOM Enterprise Gateway (PoC) – P0 Core Chat
+
+DOM Enterprise Gateway は、エンタープライズ向けの **ガバナンス付き LLM ゲートウェイ** を検証するための PoC（Proof of Concept）です。
+
+P0/P0.1 では **「ログイン → チャット → 設定/ヘルプ」** までを、WSL2 上の Docker Compose で一気通貫に動かせる状態にします。
+
+---
+
+## 1. 目的（P0 / P0.1）
+
+- Docker Compose で **Backend / Frontend(SSR) / Postgres / Redis / Nginx** を統合起動できる
+- Nginx で **`/api` → backend** / **`/` → frontend** をリバースプロキシ（アプリ側の CORS/Proxy 変更は最小）
+- **P0.1: Dev 認証** により、IdP（OIDC）なしでも PoC を操作できる
+- 既存テストを実行できる（**Backend pytest / Frontend unit test は必須**）
+
+---
+
+## 2. アーキテクチャ（PoC）
+
+- **nginx**: `http://localhost/` を入口にしてルーティング
+  - `/api/*` → backend
+  - `/*` → frontend (Angular SSR)
+- **backend**: FastAPI
+- **frontend**: Angular (SSR)
+- **postgres**: アプリデータ（チャット/設定など）
+- **redis**: キャッシュ/キュー用途
+
+---
+
+## 3. 前提（WSL2）
+
+- Windows + WSL2
+- Docker Desktop（WSL2 integration 有効）
+- `docker compose` が WSL 内で実行できること
+
+ローカルでテストも回す場合：
+- Python 3.12+
+- Poetry
+- Node.js（フロントのユニットテスト用）
+
+> `poetry install` で `python` が見つからない場合：
+> Ubuntu では `python` コマンドが無いことがあるため、`sudo apt-get update && sudo apt-get install -y python-is-python3` を入れると解決します。
+
+---
+
+## 4. 起動方法（Docker Compose / WSL2）
+
+```bash
+cd ~/work/dom-enterprise-gateway
+
+docker compose up --build -d
+
+docker compose logs -f nginx backend frontend
+````
+
+ブラウザでアクセス：
+
+- `http://localhost/`
+
+---
+
+## 5. P0.1 Dev 認証（最小コストで PoC を操作するための入口）
+
+### 5.1 何をしているか
+
+- `DEV_AUTH_ENABLED=true` のときだけ Dev 認証フローが有効になります。
+- `/api/v1/auth/login` → `/api/v1/auth/callback` で **ダミーユーザーの Cookie セッション**を発行します。
+- フロントは **Cookie を送るために `withCredentials: true`** で API を呼びます（同一 origin のため基本そのまま動きます）。
+
+> ⚠️ **本番では必ず `DEV_AUTH_ENABLED=false`** にしてください。
+
+### 5.2 必要な環境変数（docker compose 側で設定）
+
+- `DEV_AUTH_ENABLED=true`
+- `SESSION_SECRET=...`（十分長いランダム文字列を推奨）
+
+#### DB について（PoC 用）
+
+- マイグレーションを省略して最短で動かすため、PoC では `AUTO_CREATE_DB=true` を使う場合があります。
+- `AUTO_CREATE_DB=true` のとき、起動時に **テーブルが無ければ自動作成**します。
+
+> ⚠️ **本番では `AUTO_CREATE_DB=false`**（DDL は Alembic 等で管理）
+
+---
+
+## 6. テスト（P0/P0.1 では必須）
+
+### 6.1 Backend（pytest）
 
 ```bash
 cd ~/work/dom-enterprise-gateway/backend
-poetry run alembic upgrade head
+rm -rf .venv
+poetry install
+poetry run pytest
 ```
 
-### 5.4 テスト実行
-
-```bash
-cd ~/work/dom-enterprise-gateway/backend
-
-# すべてのテスト
-poetry run pytest app/tests
-# 例: 特定ファイルのみ
-poetry run pytest app/tests/test_auth_service.py -vv
-```
-
-> 引き継ぎメモ時点では、**全 53 テスト中 53 passed, 1 skipped（RAG ストリーミングテスト）** となっています。
-> 詳細は `backend/TESTING_NOTES.md` を参照してください。
-
-### 5.5 開発サーバー起動
-
-```bash
-cd ~/work/dom-enterprise-gateway/backend
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
----
-
-## 6. Frontend のセットアップと起動
-
-### 6.1 依存関係のインストール
-
-```bash
-# WSL (Ubuntu) 上で
-cd ~/work/dom-enterprise-gateway/frontend
-npm install
-```
-
-### 6.2 開発サーバー起動（SSR or CSR）
+### 6.2 Frontend（Unit Test / Headless）
 
 ```bash
 cd ~/work/dom-enterprise-gateway/frontend
-npm start       # package.json の設定に従う (ng serve 相当)
-# または dev:ssr 等、実際の scripts に合わせてください
+npm ci
+npm test -- --watch=false --browsers=ChromeHeadless
 ```
 
-ブラウザから `http://localhost:4200` にアクセスします。
+---
 
-> ⚠️ Backend / OIDC を起動していない場合、
-> `AuthGuard` により `/login` 画面から先のルート（`/chat`, `/sessions`, `/knowledge`, `/settings`, `/help`）には遷移できません。
-> これは仕様どおりの挙動です。
+## 7. トラブルシュート
 
-### 6.3 Frontend ビルド
-
-```bash
-cd ~/work/dom-enterprise-gateway/frontend
-npm run build
-```
-
-### 6.4 Frontend テスト
-
-```bash
-cd ~/work/dom-enterprise-gateway/frontend
-ng test
-```
-
-> WSL 内には GUI ブラウザ (Chrome) が入っていないため、
-> `No binary for Chrome browser on your platform` というエラーが出ることがあります。
-> その場合は、テスト環境を Windows 側に用意するか、Headless Chrome をインストールして設定してください。
+- 401: Cookie が送られていない（`withCredentials` / origin を確認）
+- 404: `/api/api/...` の二重付与（API を `/api/v1` に統一）
+- 500: backend ログのスタックトレース確認（DB テーブル/データ不足が多い）
 
 ---
 
-## 7. 画面と機能の概要（P0 時点）
+## 8. ロードマップ
 
-### 7.1 認証 / 共通レイアウト
-
-* `/login`
-
-  * OIDC プロバイダへのリダイレクトボタンのみを持つシンプルな画面。
-* `/auth/callback`
-
-  * IdP からの戻りを受け取り、Backend 経由でセッションを確立するためのコールバック画面。
-* `/`（`MainLayoutComponent`）
-
-  * Header + Sidebar + コンテンツ領域。
-  * `authGuard` によりログイン必須。
-  * Sidebar から以下のルートに遷移：
-
-### 7.2 Chat / Sessions / Memory（概要）
-
-* `/chat`
-
-  * チャットメイン画面。
-  * メッセージ一覧、入力フォーム、SSE によるストリーミング表示。
-  * IC-5 ライト（Decision / Why / Next 3 Actions）ビュー。
-  * ファイル添付とアップロード。
-* `/sessions`
-
-  * 過去セッション一覧・再開（P0 では最低限の UI）。
-* `/memory`
-
-  * Structured / Episodic Memory の閲覧（P0 範囲内）。
-
-### 7.3 Knowledge 管理（管理者のみ）
-
-* `/knowledge`（`adminGuard` + `authGuard`）
-
-  * 管理者専用ナレッジ管理画面。
-  * 機能：
-
-    * ナレッジドキュメント一覧（MatTable + ページネーション + ソート）
-    * ファイル名による検索
-    * 選択したドキュメントのメタデータ詳細表示
-  * P1 では、ファイル内容プレビューやアップロード UI を拡張予定。
-
-### 7.4 Settings / Help / Onboarding（P0 実装済み）
-
-**実装状態**
-
-* `/settings`
-
-  * Backend の `/api/user/settings` と連携。
-  * 設定可能な項目（P0）：
-
-    * テーマ: `light` / `dark`
-    * 言語: `ja` / `en`
-    * フォントサイズ: `small` / `medium` / `large`
-    * Onboarding 関連フラグ
-  * 画面上は Angular Material のフォームで実装されていますが、
-    現時点では OIDC 未起動環境のため、ログインして実際に操作する E2E 確認はまだ行えていません。
-
-* `/help`
-
-  * Backend の `/api/help/content` から `HelpSection` を取得して表示。
-  * 左ペインにセクション一覧、右ペインに詳細コンテンツを表示。
-  * コンテンツ構成は `help_content_outline.md` をもとにしています。
-  * こちらも同様に、UI の最終動作確認は OIDC 起動後に実施予定です。
-
-* Onboarding
-
-  * `UserSettings` のフラグに基づいて、初回ログイン時の簡易ダイアログ（オンボーディング）を表示するサービスを実装済み。
-  * SSR で落ちないよう `isPlatformBrowser` を用いてブラウザ専用処理をガード。
+- P0: 統合起動・基本 API
+- P0.1: Dev 認証で操作可能 PoC
+- P1: BFF + OIDC（例: Keycloak）へ差し替え
 
 ---
 
-## 8. 開発ルール（AI エージェント含む）
+## 9. セキュリティ注意
 
-このリポジトリでは、AI エージェントと協調しながら開発することを前提としています。
-主なルールは次の通りです。
-
-1. **推測禁止**
-
-   * `NEW` と書かれていても、まず実際にファイルが存在するか確認し、
-     既存なら `MODIFY` 扱いにする。
-   * API 仕様や型は、必ず既存コード・要件書を確認してから決める。
-
-2. **エラー握りつぶし禁止**
-
-   * ネットワーク / 4xx / 5xx / タイムアウト / JSON パース / SSE 切断 / 認証 / 権限 / 予期しない例外
-     など、考えうるエラーを分類し、UI かログで区別できるようにする。
-
-3. **コメントポリシー**
-
-   * クラス / メソッド / 関数単位で
-
-     * 役割
-     * いつ呼ばれるか
-     * なぜこの実装なのか
-       を日本語でコメントとして残す。
-
-4. **WSL 前提のコマンド記載**
-
-   * README やドキュメントに出すコマンドは、
-     基本的に WSL (Ubuntu) で実行する形で記述する。
-
-5. **README 更新**
-
-   * 新しいタスクセット（例: 7.4 完了時）で引き継ぐときは、
-     必ずこの README を最新状態に更新してからコミットする。
+- 本番では `DEV_AUTH_ENABLED=false` / `AUTO_CREATE_DB=false`
 
 ---
 
-## 9. 今後のロードマップ（抜粋）
+## 10. ライセンス
 
-* P1
-
-  * Knowledge 管理の CRUD 拡張（アップロード / 削除 / 編集）
-  * ファイル内容プレビュー（特に PDF / Markdown）
-  * Settings/Help UI の UX 向上と Onboarding ツアーの多ステップ化
-  * RAG / Agentic Research の高度化
-
-* P2 以降
-
-  * ガバナンスダッシュボード（フィードバック / ポリシー違反検知 / モデルルーティング）
-  * Explainability / トレースビュー
-  * 本番運用を想定した監査ログ・多テナント管理 UI など
-
----
-
-## 10. ライセンス / 問い合わせ
-
-ライセンスや対外公開ポリシーは未確定です。
-社内利用・PoC 実験用途として使用し、外部公開する場合は別途合意・レビューを行ってください。
+未確定（PoC / 社内検証用途）。
+EOF

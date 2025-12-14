@@ -7,6 +7,7 @@ import base64
 from hashlib import sha256
 from app.core.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db_session
 from app.repositories.tenant import TenantRepository
@@ -88,9 +89,35 @@ def _verify_payload(token: str) -> dict:
     data = json.loads(base64.urlsafe_b64decode(message.encode()).decode())
     return data
 
+
+async def _ensure_dev_user_exists(session: AsyncSession, user: AuthenticatedUser) -> None:
+    """
+    DEV認証でCookieから復元したユーザーがDBに存在しない場合に備え、
+    テナント/ユーザーをidempotentに作成する。
+    """
+    tenant_repo = TenantRepository(session, tenant_id=None)
+    user_repo = UserRepository(session, tenant_id=None)
+
+    tenant = await tenant_repo.get(user.tenant_id)
+    if not tenant:
+        tenant = await tenant_repo.create({"id": user.tenant_id, "name": settings.PROJECT_NAME})
+
+    db_user = await user_repo.get(user.id)
+    if not db_user:
+        await user_repo.create(
+            {
+                "id": user.id,
+                "tenant_id": tenant.id,
+                "email": user.email,
+                "hashed_password": "DEV_AUTH_DUMMY",
+                "is_admin": user.is_admin,
+            }
+        )
+
 async def get_current_user(
     request: Request,
     token: Annotated[Optional[str], Depends(oauth2_scheme)],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> AuthenticatedUser:
     """
@@ -103,7 +130,10 @@ async def get_current_user(
         if raw_session:
             try:
                 payload = _verify_payload(raw_session)
-                return AuthenticatedUser(**payload)
+                user = AuthenticatedUser(**payload)
+                # DevユーザーがDBに存在しない場合に備え、毎リクエスト軽量チェック
+                await _ensure_dev_user_exists(session, user)
+                return user
             except Exception:
                 # セッション破損時は401で再ログインさせる
                 raise HTTPException(
@@ -286,7 +316,5 @@ def get_feedback_service(
     FeedbackServiceの依存性注入を提供します。
     """
     return FeedbackService(feedback_repo)
-
-
 
 
